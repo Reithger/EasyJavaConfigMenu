@@ -1,0 +1,2 @@
+# EasyJavaConfigMenu
+Support library as an extension of SoftwareVisualInterface to provide a simple and straightforward method of making easily designable and pre-fabricated popup pages to serve as Configuration Menu screens in other programs; also contains means for accessing data in config files, managing config file folder structures, and updating the data within config files. Basically, I don't like having to make these all the time so I figured I'd make one definitive simple way of doing it for my future goodwill.
