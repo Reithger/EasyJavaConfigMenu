@@ -1,6 +1,9 @@
 package page;
 import java.util.ArrayList;
 
+import page.feature.Feature;
+import page.feature.FeatureComposite;
+
 /**
  * 
  * Class to model a Configuration page that will contain various features for the
@@ -34,49 +37,36 @@ import java.util.ArrayList;
  *  - User-visible 'Loader' class that is given to the user with the ConfigPage packed inside which
  *    contains all of the adder functions for Features, constrains bloat to that Loader class
  * 
+ * Also needs ability to add Features in theory; if a Feature is added at row -1, we store it so
+ * that a behavior can reference it by name to add to the Page (variety of places to add to).
+ * 
  */
 
 public class ConfigPage {
 
 	private String title;
+
+	private FeatureComposite layout;
 	
-	private ArrayList<ArrayList<Feature>> layout;
+	private ArrayList<Feature> sidedeck;
+	
+	private FeatureComposite hold;
 	
 	public ConfigPage(String name) {
 		title = name;
-		layout = new ArrayList<ArrayList<Feature>>();
+		layout = new FeatureComposite(title, 0, 0);
+		sidedeck = new ArrayList<Feature>();
 	}
-	
+
 	/**
-	 * Assuming 0-indexing for counting the row and column numbers
 	 * 
-	 * If row value exceeds size of Feature list, add empty rows to reach that row.
+	 * Now that the 2D list of Features is just the FeatureComposite object, details on how
+	 * adding a Feature to the page are present in the FeatureComposite class.
 	 * 
-	 * If column value exceeds size of Feature row list, append Feature to end of list instead
-	 * of using the requested column value. If column value is an existing index, pushes Features
-	 * aside to insert at that index.
-	 * 
-	 * Design note to self:
-	 * 
-	 * Concept of using column position as stand-in for horizontal proportion introduces some
-	 * awkward complexity. Row is obvious way to assign position, but do we allow column to be
-	 * defined like this or imply it's a stack structure with no editing after the fact?
-	 * 
-	 * This isn't being drawn live so the user could fix incorrect ordering, but enforcing
-	 * that style of structural design via order of operation feels flimsy. How to make it hard
-	 * for the user to mis-use custom column assignation.
-	 * 
-	 * Basic problem is user adds a Feature at column 3, we buffer spacing for indices 0-2, then
-	 * they add a Feature at column 1 with horizontal proportion 1. We can just substitute the spacing
-	 * Feature at column 1 with the new Feature. Horizontal proportion 2, we still have space to substitute
-	 * both spacing Features, but at proportion 3 it now pushes into column 4.
-	 * 
-	 * Albeit, proportion is not a mapping onto array index position, but if we buffer space in an empty
-	 * array when adding a Feature to not the end of the list, translating that buffer space via index
-	 * position - 
-	 * 
-	 * Okay, allow placement at a particular column but shorten the column value to end of list if it
-	 * exceeds the actual length of the list as we cannot tell how the user wants this handled.
+	 * Assume 0-indexing for row and column positions, returns false if negative value is given
+	 * for row or column, if row is greater than current number of rows will append rows to reach
+	 * that number of rows, if column is greater than length of that row it just appends the Feature
+	 * to the end of that row.
 	 * 
 	 * @param newFeature
 	 * @param row
@@ -85,22 +75,62 @@ public class ConfigPage {
 	 */
 	
 	public boolean addFeature(Feature newFeature, int row, int column) {
-		if(row < 0) {
-			return false;
+		return layout.addFeature(newFeature, row, column);
+	}
+	
+	/**
+	 * 
+	 * The 'side deck' contains Feature objects that we want to be able to reference later for
+	 * adding to the Page via a Behavior action. They are not part of the page, they are just
+	 * pre-defined by the user for later potential integration.
+	 * 
+	 * @param newFeature
+	 */
+	
+	public void sideDeckFeature(Feature newFeature) {
+		sidedeck.add(newFeature);
+	}
+	
+	/**
+	 * 
+	 * So that the user can custom define a FeatureComposite (a miniature page, basically, treated
+	 * all as one Feature), they can add on to the 'hold' FeatureComposite object bit by bit before
+	 * calling 'offloadComposedFeature' to add the 'hold' object to the Page.
+	 * 
+	 * This function just takes the provided Feature object and adds it to the 'hold' object.
+	 * 
+	 * @param newFeature
+	 * @param row
+	 * @param column
+	 * @return
+	 */
+	
+	public boolean composeFeature(Feature newFeature, int row, int column) {
+		if(hold == null) {
+			hold = new FeatureComposite("hold", 0, 0);
 		}
-		while(layout.size() < row) {
-			layout.add(new ArrayList<Feature>());
-		}
-		if(column < 0) {
-			return false;
-		}
-		if(layout.get(row).size() <= column) {
-			layout.get(row).add(newFeature);
+		return hold.addFeature(newFeature, row, column);
+	}
+	
+	/**
+	 * 
+	 * Finalizes the composition of the FeatureComposite 'hold' object and adds it to the Page at
+	 * the specified row and column. Then resets 'hold' to a blank FeatureComposite.
+	 * 
+	 * @param title
+	 * @param row
+	 * @param column
+	 * @return
+	 */
+	
+	public boolean offloadComposedFeature(String title, int row, int column) {
+		hold.setTitle(title);
+		if(addFeature(hold, row, column)) {
+			hold = new FeatureComposite("hold", 0, 0);
 			return true;
 		}
 		else {
-			layout.get(row).add(column, newFeature);
-			return true;
+			return false;
 		}
 	}
 	

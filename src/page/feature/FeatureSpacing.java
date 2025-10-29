@@ -1,4 +1,4 @@
-package page;
+package page.feature;
 
 import visual.composite.HandlePanel;
 

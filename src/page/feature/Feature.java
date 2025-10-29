@@ -1,4 +1,4 @@
-package page;
+package page.feature;
 
 import visual.composite.HandlePanel;
 
@@ -68,6 +68,10 @@ public abstract class Feature {
 	
 	public String getTitle() {
 		return title;
+	}
+	
+	public void setTitle(String in) {
+		title = in;
 	}
 	
 	public int getHorizontalProportion() {
