@@ -30,12 +30,18 @@ import filemeta.config.ValidateFiles;
  */
 
 public class FileAccess implements ValidateFiles, SpecificFileAccessor{
+	
+//---  Constants   ----------------------------------------------------------------------------
 
 	private static final String CONFIG_FILE_NAME = "config.txt";
+	
+//---  Instance Variables   -------------------------------------------------------------------
 	
 	private String baseConfigPath;
 	
 	private String configName;
+
+//---  Constructors   -------------------------------------------------------------------------
 	
 	public FileAccess(String folderPath) {
 		Config config = new Config(folderPath, this);
@@ -53,14 +59,8 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 		config.softWriteConfig();
 	}
 	
-	public SpecificFileAccessor getConfigAccessor(String configPath) {
-		return new FileAccess(configPath);
-	}
-	
-	public SpecificFileAccessor getConfigAccessor(String configPath, String configFileName) {
-		return new FileAccess(configPath, configFileName);
-	}
-	
+//---  Operations   ---------------------------------------------------------------------------
+
 	public String accessData(String property) throws Exception{
 		String out = Config.getConfigFileEntry(configPath(), property);
 		if(out == null) {
@@ -72,7 +72,41 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 	public void assignData(String property, String newEntry) {
 		Config.setConfigFileEntry(configPath(), property, newEntry);
 	}
-
+	
+//---  Getter Methods   -----------------------------------------------------------------------
+	
+	/**
+	 * Getter method that spawns a SpecificFileAccessor object tied to the file named "config.txt"
+	 * in the folder pointed to by the argument configPath String.
+	 * 
+	 * SpecificFileAccessor is an interface that exposes only the 'accessData' and 'assignData' methods.
+	 * 
+	 * @param configPath
+	 * @return
+	 */
+	
+	public SpecificFileAccessor getConfigAccessor(String configPath) {
+		return new FileAccess(configPath);
+	}
+	
+	/**
+	 * Getter method that spawns a SpecificFileAccessor object tied to the file identified
+	 * in the folder pointed to by the argument configPath String and named as defined by
+	 * the argument configFileName String.
+	 * 
+	 * SpecificFileAccessor is an interface that exposes only the 'accessData' and 'assignData' methods.
+	 * 
+	 * @param configPath
+	 * @param configFileName
+	 * @return
+	 */
+	
+	public SpecificFileAccessor getConfigAccessor(String configPath, String configFileName) {
+		return new FileAccess(configPath, configFileName);
+	}
+	
+//---  Support Methods   ----------------------------------------------------------------------
+	
 	@Override
 	public int validateFile(Config c, File f) {
 		return Config.CONFIG_VERIFY_SUCCESS;

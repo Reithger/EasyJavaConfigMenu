@@ -1,8 +1,13 @@
 package page;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import file.SpecificFileAccessor;
+import page.behavior.Behavior;
+import page.behavior.PropertyChanger;
 import page.feature.Feature;
 import page.feature.FeatureComposite;
+import visual.composite.HandlePanel;
 
 /**
  * 
@@ -37,12 +42,17 @@ import page.feature.FeatureComposite;
  *  - User-visible 'Loader' class that is given to the user with the ConfigPage packed inside which
  *    contains all of the adder functions for Features, constrains bloat to that Loader class
  * 
- * Also needs ability to add Features in theory; if a Feature is added at row -1, we store it so
- * that a behavior can reference it by name to add to the Page (variety of places to add to).
+ * For referencing which config file to update, should each ConfigPage be mapped to a particular config
+ * file? Is there a likely use case for one ConfigPage to edit multiple config files? Potentially.
+ * 
+ * Maybe we bind a FeatureComposite to a file so all Features inside that Composite reference that
+ * particular file.
  * 
  */
 
 public class ConfigPage {
+	
+//---  Instance Variables   -------------------------------------------------------------------
 
 	private String title;
 
@@ -51,11 +61,54 @@ public class ConfigPage {
 	private ArrayList<Feature> sidedeck;
 	
 	private FeatureComposite hold;
+	/** Each page is tied to a specific config file for simplicity which certain Behaviors will update*/
+	private SpecificFileAccessor sfa;
 	
-	public ConfigPage(String name) {
+	private HashMap<Integer, ArrayList<Behavior>> behaviorCodeMap;
+	
+//---  Constructors   -------------------------------------------------------------------------
+	
+	public ConfigPage(String name, SpecificFileAccessor fileReference) {
 		title = name;
+		sfa = fileReference;
 		layout = new FeatureComposite(title, 0, 0);
 		sidedeck = new ArrayList<Feature>();
+		behaviorCodeMap = new HashMap<Integer, ArrayList<Behavior>>();
+	}
+
+//---  Operations   ---------------------------------------------------------------------------
+
+	/**
+	 * ConfigPage does not manage its WindowFrame and HandlePanel, it is itself managed by
+	 * a ConfigWindow which passes the HandlePanel to it.
+	 * 
+	 * We may have a header and footer on the page, too, which would need to be drawn before/after
+	 * the FeatureComposite layout, which would impact the - wait, that can just be a Feature prefab.
+	 * 
+	 */
+	
+	public void draw(HandlePanel hp, int wid, int hei) {
+		layout.draw(hp, 0, 0, wid, hei);
+	}
+	
+	public void processEvent(int in) {
+		ArrayList<Behavior> behav = behaviorCodeMap.get(in);
+		if(behav != null) {
+			for(Behavior b : behav) {
+				b.performAction();
+			}
+		}
+	}
+	
+	public void assignBehavior(int codeIn, Behavior behav) {
+		if(behaviorCodeMap.get(codeIn) == null) {
+			behaviorCodeMap.put(codeIn, new ArrayList<Behavior>());
+		}
+		behaviorCodeMap.get(codeIn).add(behav);
+	}
+	
+	public void conferFileAccess(PropertyChanger in) {
+		in.assignFileAccessor(sfa);
 	}
 
 	/**
@@ -133,6 +186,8 @@ public class ConfigPage {
 			return false;
 		}
 	}
+	
+//---  Getter Functions   ---------------------------------------------------------------------
 	
 	public String getTitle() {
 		return title;
