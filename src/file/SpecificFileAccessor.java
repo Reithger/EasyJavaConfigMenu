@@ -13,4 +13,6 @@ public interface SpecificFileAccessor {
 	
 	public abstract void assignData(String property, String value);
 	
+	public abstract SpecificPropertyAccessor getPropertyAccessor(String property);
+	
 }

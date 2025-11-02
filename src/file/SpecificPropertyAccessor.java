@@ -12,6 +12,8 @@ package file;
 
 public interface SpecificPropertyAccessor {
 
-	public abstract String getConfigPropertyValue();
+	public abstract String getConfigPropertyValue() throws Exception;
+	
+	public abstract void setConfigPropertyValue(String value);
 	
 }

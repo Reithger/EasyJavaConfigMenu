@@ -1,9 +1,9 @@
 package page.behavior;
 
-import file.SpecificFileAccessor;
+import file.SpecificPropertyAccessor;
 
 public interface PropertyChanger {
 
-	public abstract void assignFileAccessor(SpecificFileAccessor sfa);
+	public abstract void assignPropertyAccessor(SpecificPropertyAccessor sfa);
 	
 }

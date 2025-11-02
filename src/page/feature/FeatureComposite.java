@@ -97,4 +97,15 @@ public class FeatureComposite extends Feature {
 		}
 	}
 	
+	public Feature findFeature(String identifier){
+		for(ArrayList<Feature> arr : layout) {
+			for(Feature f : arr) {
+				if(f.getTitle().equals(identifier)) {
+					return f;
+				}
+			}
+		}
+		return null;		
+	}
+	
 }

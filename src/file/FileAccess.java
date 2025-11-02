@@ -105,6 +105,24 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 		return new FileAccess(configPath, configFileName);
 	}
 	
+	/**
+	 * 
+	 * Generates the subclass of FileAccess, PropertyAccess, that polymorphs and is
+	 * returned as the interface SpecificPropertyAccessor; this is an interface that
+	 * focuses the general behavior of FileAccess down to just reading the single associated
+	 * property for a particular thing.
+	 * 
+	 * This function is also a realization of the SpecificFileAccessor interface so that FileAccess
+	 * objects focused onto a particular config file can then produce the subclass that is focused on
+	 * reading a particular property. Maybe make it also write to it so that updating the property
+	 * is similarly trivial for Behaviors.
+	 * 
+	 */
+	
+	public SpecificPropertyAccessor getPropertyAccessor(String property) {
+		return new PropertyAccess(baseConfigPath, configName, property);
+	}
+	
 //---  Support Methods   ----------------------------------------------------------------------
 	
 	@Override

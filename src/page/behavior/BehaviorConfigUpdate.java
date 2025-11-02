@@ -1,6 +1,7 @@
 package page.behavior;
 
-import file.SpecificFileAccessor;
+import file.SpecificPropertyAccessor;
+import page.FeatureContentReader;
 
 /**
  * 
@@ -14,30 +15,34 @@ import file.SpecificFileAccessor;
  * 
  */
 
-public class BehaviorConfigUpdate extends Behavior implements PropertyChanger{
+public class BehaviorConfigUpdate extends Behavior implements PropertyChanger, FeatureReader{
 	
-	private String updateProperty;
+	private SpecificPropertyAccessor fileManip;
 	
-	private SpecificFileAccessor fileManip;
+	private FeatureContentReader fcr;
 
-	public BehaviorConfigUpdate(String featureReference, String configProperty) {
+	public BehaviorConfigUpdate(String featureReference) {
 		super(featureReference);
-		updateProperty = configProperty;
 	}
 
 	@Override
 	public boolean performAction() {
-		fileManip.assignData(updateProperty, getFeatureData());
+		fileManip.setConfigPropertyValue(getFeatureData());
 		return false;
 	}
 	
 	private String getFeatureData() {
-		return null;
+		return fcr.getFeatureDataContents(getFeatureReference());
 	}
 
 	@Override
-	public void assignFileAccessor(SpecificFileAccessor sfa) {
+	public void assignPropertyAccessor(SpecificPropertyAccessor sfa) {
 		fileManip = sfa;
+	}
+
+	@Override
+	public void assignFeatureContentReader(FeatureContentReader featureReader) {
+		fcr = featureReader;		
 	}
 
 }

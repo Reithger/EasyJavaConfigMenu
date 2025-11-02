@@ -50,7 +50,7 @@ import visual.composite.HandlePanel;
  * 
  */
 
-public class ConfigPage {
+public class ConfigPage implements FeatureContentReader{
 	
 //---  Instance Variables   -------------------------------------------------------------------
 
@@ -91,6 +91,12 @@ public class ConfigPage {
 		layout.draw(hp, 0, 0, wid, hei);
 	}
 	
+	public String getFeatureDataContents(String featureIdentifier) {
+		Feature f = layout.findFeature(featureIdentifier);
+		//TODO: only some Features have custom data to access, but all stored as Features. what gives.
+		return null;
+	}
+
 	public void processEvent(int in) {
 		ArrayList<Behavior> behav = behaviorCodeMap.get(in);
 		if(behav != null) {
@@ -106,9 +112,9 @@ public class ConfigPage {
 		}
 		behaviorCodeMap.get(codeIn).add(behav);
 	}
-	
-	public void conferFileAccess(PropertyChanger in) {
-		in.assignFileAccessor(sfa);
+
+	public void conferFileAccess(PropertyChanger in, String property) {
+		in.assignPropertyAccessor(sfa.getPropertyAccessor(property));
 	}
 
 	/**

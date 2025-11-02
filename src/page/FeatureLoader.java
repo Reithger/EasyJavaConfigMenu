@@ -1,7 +1,9 @@
 package page;
 
 import page.feature.FeatureBasicText;
+import page.feature.FeatureButton;
 import page.feature.FeatureSpacing;
+import page.behavior.BehaviorConfigUpdate;
 import page.feature.Feature;
 
 /**
@@ -95,6 +97,35 @@ public class FeatureLoader {
 	public void addBasicText(String title, int row, int column, int horizontalProportion, String textDisplay) {
 		Feature f = new FeatureBasicText(title, horizontalProportion, 1, textDisplay);
 		handleFeature(f, row, column);
+	}
+	
+	/**
+	 * Expectation is that you will add a Button with a particular code value integer, and then add a
+	 * Behavior with the same code value integer so that the button is tied to that desired reaction.
+	 * 
+	 * Basically, when user clicks the button, it sends the code value to a decision-making environment
+	 * that will look for a Behavior (or Behaviors) tied to that same code value to activate
+	 * 
+	 * @param title
+	 * @param row
+	 * @param column
+	 * @param horizProportion
+	 * @param vertProportion
+	 * @param textDisplay
+	 * @param codeVal
+	 */
+	
+	public void addButton(String title, int row, int column, int horizProportion, int vertProportion, String textDisplay, int codeVal) {
+		Feature f = new FeatureButton(title, horizProportion, vertProportion, textDisplay, codeVal);
+		handleFeature(f, row, column);
+	}
+	
+//---  Behavior Adding   ----------------------------------------------------------------------
+	
+	public void addBehaviorUpdateConfigProperty(int codeMatch, String featureReference, String propertyUpdate) {
+		BehaviorConfigUpdate bcu = new BehaviorConfigUpdate(featureReference);
+		page.conferFileAccess(bcu, propertyUpdate);
+		page.assignBehavior(codeMatch, bcu);
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
