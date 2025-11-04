@@ -1,5 +1,7 @@
 package page.feature;
 
+import java.awt.Color;
+
 import visual.composite.HandlePanel;
 
 /**
@@ -22,9 +24,15 @@ import visual.composite.HandlePanel;
 
 public class FeatureButton extends Feature{
 	
+	private final static Color COLOR_OUTLINE = new Color(122, 122, 122);
+	
+	private final static Color COLOR_BACKING = new Color(199, 199, 199);
+	
 	private String display;
 	
 	private int codeValue;
+	
+	//TODO: Probably want some consistent sizing for this that's not proportional to given wid/hei
 
 	public FeatureButton(String inTitle, int proportionHorizontal, int proportionVertical, String displayText, int code) {
 		super(inTitle, proportionHorizontal, proportionVertical);
@@ -32,10 +40,15 @@ public class FeatureButton extends Feature{
 		codeValue = code;
 	}
 
+	public String getDataContent() {
+		return display;
+	}
+
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
 		// TODO Auto-generated method stub
 		// Just draws a button here and associates the codeValue int to it for the SVI event handling
+		hp.handleTextButton("button_" + display + "_" + codeValue, "basic", 5, x, y, width, height, null, display, codeValue, COLOR_BACKING, COLOR_OUTLINE);
 	}
 
 }

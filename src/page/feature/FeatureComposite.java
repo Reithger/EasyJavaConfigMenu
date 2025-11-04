@@ -39,7 +39,18 @@ public class FeatureComposite extends Feature {
 		//      calculating positions based on proportion values and whatnot.
 		
 	}
+
+	/**
+	 * 
+	 * This is kinda complicated for this context, will consider
+	 * TODO
+	 * 
+	 */
 	
+	public String getDataContent() {
+		return null;
+	}
+
 	/**
 	 * Assuming 0-indexing for counting the row and column numbers
 	 * 

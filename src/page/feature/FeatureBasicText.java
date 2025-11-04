@@ -14,6 +14,14 @@ public class FeatureBasicText extends Feature{
 		super(inTitle, proportionHorizontal, proportionVertical);
 		text = displayText;
 	}
+	
+	public String getDataContent() {
+		return text;
+	}
+	
+	protected void setShowText(String in) {
+		text = in;
+	}
 
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {

@@ -66,6 +66,8 @@ public abstract class Feature {
 	
 	public abstract void draw(HandlePanel hp, int x, int y, int width, int height);
 	
+	public abstract String getDataContent();
+	
 	public String getTitle() {
 		return title;
 	}

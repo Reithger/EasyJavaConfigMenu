@@ -1,6 +1,7 @@
 package main;
 import file.FileAccess;
 import file.SpecificFileAccessor;
+import page.FeatureLoader;
 
 /**
  * 
@@ -52,6 +53,8 @@ import file.SpecificFileAccessor;
 public class ConfigMenu {
 
 	private FileAccess configData;
+	/** TODO: Should allow for multiple of these for popout windows*/
+	private ConfigWindow cw;
 	
 	/**
 	 * Assumption is there is a default, root folder location for a top level config file context
@@ -65,6 +68,18 @@ public class ConfigMenu {
 	
 	public ConfigMenu(String pathToConfigFile) {
 		configData = new FileAccess(pathToConfigFile);
+	}
+	
+	public void addConfigPage(String title, String configFolderPath) {
+		cw.addConfigPage(title, configData.getConfigAccessor(configFolderPath));
+	}
+	
+	public void addConfigPage(String title, String configFolderPath, String configFileName) {
+		cw.addConfigPage(title, configData.getConfigAccessor(configFolderPath, configFileName));
+	}
+	
+	public FeatureLoader getFeatureLoader(String configPageName) {
+		return new FeatureLoader(cw.getConfigPage(configPageName));
 	}
 	
 	public SpecificFileAccessor getConfigAccessor(String configPath) {

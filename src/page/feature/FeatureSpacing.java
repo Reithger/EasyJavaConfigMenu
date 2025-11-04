@@ -18,4 +18,8 @@ public class FeatureSpacing extends Feature{
 		return;
 	}
 
+	public String getDataContent() {
+		return "";
+	}
+
 }

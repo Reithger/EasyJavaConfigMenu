@@ -66,6 +66,8 @@ public class ConfigPage implements FeatureContentReader{
 	
 	private HashMap<Integer, ArrayList<Behavior>> behaviorCodeMap;
 	
+	private HandlePanel panel;
+	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	public ConfigPage(String name, SpecificFileAccessor fileReference) {
@@ -74,6 +76,12 @@ public class ConfigPage implements FeatureContentReader{
 		layout = new FeatureComposite(title, 0, 0);
 		sidedeck = new ArrayList<Feature>();
 		behaviorCodeMap = new HashMap<Integer, ArrayList<Behavior>>();
+		panel = new HandlePanel(0, 0, 100, 100) {
+			@Override
+			public void clickEvent(int code, int x, int y, int type) {
+				processEvent(code);
+			}
+		};
 	}
 
 //---  Operations   ---------------------------------------------------------------------------
@@ -87,17 +95,32 @@ public class ConfigPage implements FeatureContentReader{
 	 * 
 	 */
 	
-	public void draw(HandlePanel hp, int wid, int hei) {
-		layout.draw(hp, 0, 0, wid, hei);
+	public void draw(int x, int y, int wid, int hei) {
+		if(panel.getWidth() != wid || panel.getHeight() != hei) {
+			panel.resize(wid, hei);
+			panel.removeAllElements();
+		}
+		if(panel.getPanelXLocation() != x || panel.getPanelYLocation() != y) {
+			panel.setLocation(x, y);
+		}
+		layout.draw(panel, 0, 0, wid, hei);
 	}
+	
+	/**
+	 * Decided that all Feature objects can store some kind of dynamic data relevant to itself, not
+	 * just those that take user input/interaction to decide a value field.
+	 * 
+	 * May just be the text assigned to it to display as an informational Feature, may be data submitted
+	 * via user interaction
+	 * 
+	 */
 	
 	public String getFeatureDataContents(String featureIdentifier) {
 		Feature f = layout.findFeature(featureIdentifier);
-		//TODO: only some Features have custom data to access, but all stored as Features. what gives.
-		return null;
+		return f.getDataContent();
 	}
 
-	public void processEvent(int in) {
+	private void processEvent(int in) {
 		ArrayList<Behavior> behav = behaviorCodeMap.get(in);
 		if(behav != null) {
 			for(Behavior b : behav) {
@@ -197,6 +220,10 @@ public class ConfigPage implements FeatureContentReader{
 	
 	public String getTitle() {
 		return title;
+	}
+	
+	public HandlePanel getPanelReference() {
+		return panel;
 	}
 	
 }
