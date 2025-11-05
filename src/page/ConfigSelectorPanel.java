@@ -2,6 +2,8 @@ package page;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import visual.composite.HandlePanel;
 
@@ -41,8 +43,8 @@ public class ConfigSelectorPanel extends HandlePanel{
 		pcs = configSwap;
 	}
 	
-	public void setConfigPageNames(ArrayList<String> names, String active) {
-		configNames = names;
+	public void setConfigPageNames(Set<String> names, String active) {
+		configNames = new ArrayList<String>(names);
 		currActive = active;
 	}
 	
@@ -55,12 +57,12 @@ public class ConfigSelectorPanel extends HandlePanel{
 		boolean needScroll = widSpace < MIN_TAB_SPACE;
 		widSpace = needScroll ? MIN_TAB_SPACE : widSpace;
 		
-		this.handleScrollbar("scrollbar", "default", "tabs", 5, 0, MIN_TAB_SPACE, getWidth(), MIN_TAB_SPACE / 2, 0, getWidth(), false);
+		this.handleScrollbar("scrollbar", "default", "tabs", 5, 0, TAB_HEIGHT, getWidth(), TAB_HEIGHT / 2, 0, getWidth(), false);
 		
 		int currX = 0;
 		int currCode = START_CODE;
 		for(String s : configNames) {
-			this.handleTextButton("button_" + s, "tabs", 5, currX, 0, widSpace, TAB_HEIGHT, null, s, currCode++, s.equals(currActive) ? SELECTED_COLOR : NON_SELECT_COLOR, OUTLINE_COLOR);
+			this.handleTextButton("button_" + s, "tabs", 5, currX + widSpace / 2, TAB_HEIGHT / 2, widSpace, TAB_HEIGHT, null, s, currCode++, s.equals(currActive) ? SELECTED_COLOR : NON_SELECT_COLOR, OUTLINE_COLOR);
 			currX += widSpace;
 		}
 	}

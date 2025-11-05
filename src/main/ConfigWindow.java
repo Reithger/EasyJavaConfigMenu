@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 import file.SpecificFileAccessor;
@@ -58,9 +59,12 @@ public class ConfigWindow implements PromptConfigSwap{
 				else {
 					pages.get(activePage).draw(0, 0, wid, hei);
 				}
+				super.repaint();
 			}
 		};
-		
+		wf.setName("Easy Java Config Menu");
+		wf.setBackgroundColor(new Color(188, 188, 188));
+		//wf.showWindow();
 	}
 	
 	public void display(int wid, int hei) {
@@ -68,19 +72,20 @@ public class ConfigWindow implements PromptConfigSwap{
 		if(pages.size() == 0) {
 			return;
 		}
-		ConfigPage cf = pages.get(activePage);
-		wf.addPanel(activePage, cf.getPanelReference());
 	}
 	
 	public void addConfigPage(ConfigPage in) {
 		pages.put(in.getTitle(), in);
-		wf.addPanel(activePage, in.getPanelReference());
+		wf.addPanel(in.getTitle(), in.getPanelReference());
+		wf.hidePanel(in.getTitle());
 		if(activePage == null) {
 			activePage = in.getTitle();
 			wf.showPanel(activePage);
 		}
 		if(pages.size() > 1 && csp == null) {
 			csp = new ConfigSelectorPanel(0, 0, 100, 100, this);
+			csp.setConfigPageNames(pages.keySet(), activePage);
+			wf.addPanel("';'Special Internal Selector';'", csp);
 		}
 	}
 	
@@ -96,6 +101,7 @@ public class ConfigWindow implements PromptConfigSwap{
 				updateActivePage(pages.keySet().iterator().next());
 			}
 			wf.removePanel(name);
+			csp.setConfigPageNames(pages.keySet(), activePage);
 		}
 	}
 
@@ -105,6 +111,7 @@ public class ConfigWindow implements PromptConfigSwap{
 			wf.hidePanel(activePage);
 			activePage = name;
 			wf.showPanel(activePage);
+			csp.setConfigPageNames(pages.keySet(), activePage);
 		}
 	}
 	

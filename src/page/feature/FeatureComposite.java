@@ -1,5 +1,6 @@
 package page.feature;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import visual.composite.HandlePanel;
@@ -37,7 +38,25 @@ public class FeatureComposite extends Feature {
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
 		// TODO This has all of the logic for drawing the Features within the Composite;
 		//      calculating positions based on proportion values and whatnot.
-		
+
+		int currY = 0;
+		for(ArrayList<Feature> arr : layout) {
+			int totHorizProp = 0;
+			int maxVertProp = 1;
+			for(Feature f : arr) {
+				totHorizProp += f.getHorizontalProportion();
+				maxVertProp = f.getVerticalProportion() > maxVertProp ? f.getVerticalProportion() : maxVertProp;
+			}
+			int widAlloc = width / totHorizProp;
+			int heiAlloc = 40; //TODO: oh, there is a config file for this re: how it should draw(fonts, sizing, etc.)
+			int currX = 0;
+			for(Feature f : arr) {
+				int heiUse = heiAlloc * f.getVerticalProportion();
+				f.draw(hp, currX + widAlloc / 2, currY + heiUse / 2, widAlloc, heiUse);
+				currX += widAlloc * f.getHorizontalProportion();
+			}
+			currY += maxVertProp * heiAlloc;
+		}
 	}
 
 	/**
@@ -92,7 +111,7 @@ public class FeatureComposite extends Feature {
 		if(row < 0) {
 			return false;
 		}
-		while(layout.size() < row) {
+		while(layout.size() <= row) {
 			layout.add(new ArrayList<Feature>());
 		}
 		if(column < 0) {

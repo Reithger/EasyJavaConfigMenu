@@ -70,11 +70,23 @@ public class ConfigMenu {
 		configData = new FileAccess(pathToConfigFile);
 	}
 	
+	public void resizeConfigWindow(int width, int height) {
+		if(cw != null) {
+			cw.display(width, height);
+		}
+	}
+	
 	public void addConfigPage(String title, String configFolderPath) {
+		if(cw == null) {
+			cw = new ConfigWindow();
+		}
 		cw.addConfigPage(title, configData.getConfigAccessor(configFolderPath));
 	}
 	
 	public void addConfigPage(String title, String configFolderPath, String configFileName) {
+		if(cw == null) {
+			cw = new ConfigWindow();
+		}
 		cw.addConfigPage(title, configData.getConfigAccessor(configFolderPath, configFileName));
 	}
 	

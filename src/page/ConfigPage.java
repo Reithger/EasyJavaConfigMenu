@@ -97,10 +97,12 @@ public class ConfigPage implements FeatureContentReader{
 	
 	public void draw(int x, int y, int wid, int hei) {
 		if(panel.getWidth() != wid || panel.getHeight() != hei) {
+			System.out.println("Resize");
 			panel.resize(wid, hei);
 			panel.removeAllElements();
 		}
 		if(panel.getPanelXLocation() != x || panel.getPanelYLocation() != y) {
+			System.out.println("Relocate");
 			panel.setLocation(x, y);
 		}
 		layout.draw(panel, 0, 0, wid, hei);

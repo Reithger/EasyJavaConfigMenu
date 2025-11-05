@@ -1,12 +1,13 @@
 package page.feature;
 
+import java.awt.Color;
 import java.awt.Font;
 
 import visual.composite.HandlePanel;
 
 public class FeatureBasicText extends Feature{
 	
-	private final static Font DEFAULT_FONT = new Font("Sans Serif", 12, Font.BOLD);
+	private final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
 	
 	private String text;
 
@@ -25,7 +26,7 @@ public class FeatureBasicText extends Feature{
 
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
-		hp.addText("text_display_" + x + "_" + y, 5, "basic", x, y, width, height, text, DEFAULT_FONT, false, false, true);
+		hp.handleText("text_display_" + x + "_" + y, "basic", 5, x, y, width, height, DEFAULT_FONT, text, new Color(0, 0, 0));
 	}
 
 }
