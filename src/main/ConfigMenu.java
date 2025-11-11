@@ -70,6 +70,14 @@ public class ConfigMenu {
 		configData = new FileAccess(pathToConfigFile);
 	}
 	
+	public void establishConfigPropertiesPath(String pathToConfigFile, String fileName, String ... properties) {
+		configData.assignProperties(pathToConfigFile, fileName, properties);
+	}
+	
+	public void establishConfigProperties(String pathToConfigFile, String ... properties) {
+		establishConfigPropertiesPath(pathToConfigFile, FileAccess.CONFIG_FILE_NAME, properties);
+	}
+	
 	public void resizeConfigWindow(int width, int height) {
 		if(cw != null) {
 			cw.display(width, height);

@@ -1,6 +1,7 @@
 package page.feature;
 
 import file.SpecificPropertyAccessor;
+import page.behavior.PropertyAccessor;
 import visual.composite.HandlePanel;
 
 /**
@@ -13,7 +14,7 @@ import visual.composite.HandlePanel;
  * 
  */
 
-public class FeaturePropertyText extends FeatureBasicText{
+public class FeaturePropertyText extends FeatureBasicText implements PropertyAccessor{
 
 	private SpecificPropertyAccessor property;
 	
@@ -21,11 +22,21 @@ public class FeaturePropertyText extends FeatureBasicText{
 	
 	private int counter;
 	
-	public FeaturePropertyText(String inTitle, int proportionHorizontal, int proportionVertical, SpecificPropertyAccessor propertyRef) throws Exception {
+	private String basicDisplay;
+	
+	public FeaturePropertyText(String inTitle, int proportionHorizontal, int proportionVertical, String prefixText) {
 		super(inTitle, proportionHorizontal, proportionVertical, "");
-		property = propertyRef;
 		lastGrabbed = "";
-		setShowText(property.getConfigPropertyValue());
+		basicDisplay = prefixText;
+	}
+	
+	private void updateShowText(){
+		if(property != null)
+			try {
+				setShowText(basicDisplay + property.getConfigPropertyValue());
+			} catch (Exception e) {
+				setShowText(basicDisplay + "null");
+			}
 	}
 	
 	/**
@@ -36,21 +47,26 @@ public class FeaturePropertyText extends FeatureBasicText{
 	
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
-		if(counter % 60 == 0) {
+		if(counter % 20 == 0) {
 			try {
-				setShowText(property.getConfigPropertyValue());
+				updateShowText();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		super.draw(hp, x, y, width, height);
 		counter++;
+		super.draw(hp, x, y, width, height);
 	}
 	
 	@Override
 	public String getDataContent() {
 		return lastGrabbed;
+	}
+
+	@Override
+	public void assignPropertyAccessor(SpecificPropertyAccessor sfa) {
+		property = sfa;		
 	}
 
 }

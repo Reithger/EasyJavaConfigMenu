@@ -10,6 +10,8 @@ public class FeatureBasicText extends Feature{
 	private final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
 	
 	private String text;
+	
+	private boolean replace;
 
 	public FeatureBasicText(String inTitle, int proportionHorizontal, int proportionVertical, String displayText) {
 		super(inTitle, proportionHorizontal, proportionVertical);
@@ -22,10 +24,15 @@ public class FeatureBasicText extends Feature{
 	
 	protected void setShowText(String in) {
 		text = in;
+		replace = true;
 	}
 
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
+		if(replace) {
+			replace = false;
+			hp.removeElement("text_display_" + x + "_" + y);
+		}
 		hp.handleText("text_display_" + x + "_" + y, "basic", 5, x, y, width, height, DEFAULT_FONT, text, new Color(0, 0, 0));
 	}
 

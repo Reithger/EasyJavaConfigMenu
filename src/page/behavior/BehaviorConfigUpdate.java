@@ -15,7 +15,7 @@ import page.FeatureContentReader;
  * 
  */
 
-public class BehaviorConfigUpdate extends Behavior implements PropertyChanger, FeatureReader{
+public class BehaviorConfigUpdate extends Behavior implements PropertyAccessor, FeatureReader{
 	
 	private SpecificPropertyAccessor fileManip;
 	

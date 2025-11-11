@@ -2,7 +2,6 @@ package page;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import visual.composite.HandlePanel;
@@ -56,8 +55,8 @@ public class ConfigSelectorPanel extends HandlePanel{
 		int widSpace = this.getWidth() / configNames.size();
 		boolean needScroll = widSpace < MIN_TAB_SPACE;
 		widSpace = needScroll ? MIN_TAB_SPACE : widSpace;
-		
-		this.handleScrollbar("scrollbar", "default", "tabs", 5, 0, TAB_HEIGHT, getWidth(), TAB_HEIGHT / 2, 0, getWidth(), false);
+		if(needScroll)
+			handleScrollbar("scrollbar", "default", "tabs", 5, 0, TAB_HEIGHT, getWidth(), TAB_HEIGHT / 2, 0, getWidth(), false);
 		
 		int currX = 0;
 		int currCode = START_CODE;
@@ -67,6 +66,10 @@ public class ConfigSelectorPanel extends HandlePanel{
 		}
 	}
 	
+	public int selectorBarHeight() {
+		return getWidth() / configNames.size() < MIN_TAB_SPACE ? 2 * TAB_HEIGHT : TAB_HEIGHT;
+	}
+	
 	@Override
 	public void clickEvent(int code, int x, int y, int type) {
 		//TODO: This is where button code associates to a config page
@@ -74,6 +77,7 @@ public class ConfigSelectorPanel extends HandlePanel{
 		
 		if(select >= 0 && select < configNames.size()) {
 			pcs.updateActivePage(configNames.get(select));
+			removeAllElements();
 		}
 	}
 

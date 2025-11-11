@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 import file.SpecificFileAccessor;
 import page.behavior.Behavior;
-import page.behavior.PropertyChanger;
+import page.behavior.FeatureReader;
+import page.behavior.PropertyAccessor;
 import page.feature.Feature;
 import page.feature.FeatureComposite;
 import visual.composite.HandlePanel;
@@ -138,8 +139,12 @@ public class ConfigPage implements FeatureContentReader{
 		behaviorCodeMap.get(codeIn).add(behav);
 	}
 
-	public void conferFileAccess(PropertyChanger in, String property) {
+	public void conferFileAccess(PropertyAccessor in, String property) {
 		in.assignPropertyAccessor(sfa.getPropertyAccessor(property));
+	}
+	
+	public void conferFeatureAccess(FeatureReader in) {
+		in.assignFeatureContentReader(this);
 	}
 
 	/**

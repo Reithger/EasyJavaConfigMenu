@@ -3,6 +3,7 @@ import java.io.File;
 
 import filemeta.config.Config;
 import filemeta.config.ValidateFiles;
+import filemeta.config.blueprint.ConfigBlueprint;
 
 /**
  * 
@@ -33,7 +34,11 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 	
 //---  Constants   ----------------------------------------------------------------------------
 
-	private static final String CONFIG_FILE_NAME = "config.txt";
+	public static final String CONFIG_FILE_NAME = "config.txt";
+	
+	private static final String CONFIG_DESCRIPTION_DEFAULT = "Default config file description";
+	
+	public static final String CONFIG_FOLDER = "config";
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -44,19 +49,13 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 //---  Constructors   -------------------------------------------------------------------------
 	
 	public FileAccess(String folderPath) {
-		Config config = new Config(folderPath, this);
 		baseConfigPath = folderPath;
 		configName = CONFIG_FILE_NAME;
-		config.addFile(folderPath, configName, "Default config file description");
-		config.softWriteConfig();
 	}
 	
 	public FileAccess(String folderPath, String inConfigName) {
-		Config config = new Config(folderPath, this);
 		baseConfigPath = folderPath;
 		configName = inConfigName;
-		config.addFile(folderPath, configName, "Default config file description");
-		config.softWriteConfig();
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -71,6 +70,18 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 	
 	public void assignData(String property, String newEntry) {
 		Config.setConfigFileEntry(configPath(), property, newEntry);
+	}
+	
+	public void assignProperties(String path, String file, String ... properties) {
+		String parentPath = new File(path).getParent();
+		String folder = new File(path).getName();
+		Config cb = new Config(parentPath, this);
+		cb.addFilePath(folder);
+		cb.addFile(folder, file, CONFIG_DESCRIPTION_DEFAULT);
+		for(String s : properties) {
+			cb.addFileEntry(folder, file, s, "", "null");
+		}
+		cb.softWriteConfig();
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------

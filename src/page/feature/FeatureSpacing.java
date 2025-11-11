@@ -8,6 +8,10 @@ import visual.composite.HandlePanel;
  */
 
 public class FeatureSpacing extends Feature{
+	
+	public final static String CAN_REMOVE = "spacer";
+	
+	public final static String NO_REMOVE = "fixture";
 
 	public FeatureSpacing(String inTitle, int proportionHorizontal, int proportionVertical) {
 		super(inTitle, proportionHorizontal, proportionVertical);

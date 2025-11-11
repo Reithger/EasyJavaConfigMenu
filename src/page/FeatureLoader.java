@@ -2,7 +2,9 @@ package page;
 
 import page.feature.FeatureBasicText;
 import page.feature.FeatureButton;
+import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
+import page.feature.FeatureTextInput;
 import page.behavior.BehaviorConfigUpdate;
 import page.feature.Feature;
 
@@ -30,6 +32,9 @@ import page.feature.Feature;
  *  - cm.addPage("name of page")
  *  - FeatureLoader fl = cm.getFeatureLoader("name of page")
  *  - fl.addFeature(details, of, feature, to, add)
+ * 
+ * Alternate Loader idea: string encoding system that translates literal symbols in a string
+ * to the commands in here, multiple layers of defining the config menu's details
  * 
  */
 
@@ -89,13 +94,13 @@ public class FeatureLoader {
 	
 //---  Feature Adding   -----------------------------------------------------------------------
 
-	public void addSpacing(int row, int column, int horizontalProportion, int verticalProportion) {
-		Feature f = new FeatureSpacing("spacer", horizontalProportion, verticalProportion);
+	public void addSpacing(int row, int column, int horizontalProportion, int verticalProportion) throws Exception {
+		Feature f = new FeatureSpacing(FeatureSpacing.CAN_REMOVE, horizontalProportion, verticalProportion);
 		handleFeature(f, row, column);
 	}
 	
-	public void addBasicText(String title, int row, int column, int horizontalProportion, String textDisplay) {
-		Feature f = new FeatureBasicText(title, horizontalProportion, 1, textDisplay);
+	public void addBasicText(String title, int row, int column, int horizontalProportion, int vertProportion, String textDisplay) throws Exception {
+		Feature f = new FeatureBasicText(title, horizontalProportion, vertProportion, textDisplay);
 		handleFeature(f, row, column);
 	}
 	
@@ -113,19 +118,32 @@ public class FeatureLoader {
 	 * @param vertProportion
 	 * @param textDisplay
 	 * @param codeVal
+	 * @throws Exception 
 	 */
 	
-	public void addButton(String title, int row, int column, int horizProportion, int vertProportion, String textDisplay, int codeVal) {
+	public void addButton(String title, int row, int column, int horizProportion, int vertProportion, String textDisplay, int codeVal) throws Exception {
 		Feature f = new FeatureButton(title, horizProportion, vertProportion, textDisplay, codeVal);
 		handleFeature(f, row, column);
 	}
 	
+	public void addReferenceText(String title, int row, int column, int horizProportion, int vertProportion, String prefixText, String propertyReference) throws Exception {
+		FeaturePropertyText f = new FeaturePropertyText(title, horizProportion, vertProportion, prefixText);
+		page.conferFileAccess(f, propertyReference);
+		handleFeature(f, row, column);
+	}
+	
+	public void addTextInput(String title, int row, int column, int horizProportion, int vertProportion, String defaultText) throws Exception {
+		Feature f = new FeatureTextInput(title, horizProportion, vertProportion, defaultText);
+		handleFeature(f, row, column);
+	}
+
 //---  Behavior Adding   ----------------------------------------------------------------------
 	
 	public void addBehaviorUpdateConfigProperty(int codeMatch, String featureReference, String propertyUpdate) {
 		BehaviorConfigUpdate bcu = new BehaviorConfigUpdate(featureReference);
 		page.conferFileAccess(bcu, propertyUpdate);
 		page.assignBehavior(codeMatch, bcu);
+		page.conferFeatureAccess(bcu);
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -149,10 +167,12 @@ public class FeatureLoader {
 	
 //---  Support Methods   ----------------------------------------------------------------------
 
-	private void handleFeature(Feature in, int row, int column) {
+	private void handleFeature(Feature in, int row, int column) throws Exception{
 		switch(mode) {
 			case MODE_ADD:
-				page.addFeature(in, row, column);
+				if(!page.addFeature(in, row, column)) {
+					throw new Exception("Spacing Overlap! Feature: " + in.getTitle() + " caused unmanageable positioning conflict");
+				}
 				break;
 			case MODE_SIDE_DECK:
 				page.sideDeckFeature(in);

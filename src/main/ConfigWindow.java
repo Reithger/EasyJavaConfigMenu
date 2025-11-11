@@ -54,7 +54,7 @@ public class ConfigWindow implements PromptConfigSwap{
 				int hei = wf.getHeight();
 				if(csp != null) {
 					csp.draw(wid, hei);
-					pages.get(activePage).draw(0, ConfigSelectorPanel.TAB_HEIGHT, wid, hei - ConfigSelectorPanel.TAB_HEIGHT);
+					pages.get(activePage).draw(0, csp.selectorBarHeight(), wid, hei - csp.selectorBarHeight());
 				}
 				else {
 					pages.get(activePage).draw(0, 0, wid, hei);

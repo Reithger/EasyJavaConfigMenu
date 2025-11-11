@@ -24,9 +24,9 @@ import visual.composite.HandlePanel;
 
 public class FeatureButton extends Feature{
 	
-	private final static Color COLOR_OUTLINE = new Color(122, 122, 122);
+	private final static Color COLOR_OUTLINE = new Color(66, 66, 66);
 	
-	private final static Color COLOR_BACKING = new Color(199, 199, 199);
+	private final static Color COLOR_BACKING = new Color(122, 122, 122);
 	
 	private String display;
 	
