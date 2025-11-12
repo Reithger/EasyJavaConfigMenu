@@ -18,6 +18,8 @@ import visual.composite.HandlePanel;
 
 public class ConfigSelectorPanel extends HandlePanel{
 
+//---  Constants   ----------------------------------------------------------------------------
+	
 	private final static int START_CODE = 50;
 	
 	private final static int MIN_TAB_SPACE = 120;
@@ -30,17 +32,23 @@ public class ConfigSelectorPanel extends HandlePanel{
 	
 	private final static Color SELECTED_COLOR = new Color(55, 202, 77);
 	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	private ArrayList<String> configNames;
 	
 	private String currActive;
 	
 	private PromptConfigSwap pcs;
 	
+//---  Constructors   -------------------------------------------------------------------------
+	
 	public ConfigSelectorPanel(int x, int y, int width, int height, PromptConfigSwap configSwap) {
 		super(x, y, width, height);
 		configNames = new ArrayList<String>();
 		pcs = configSwap;
 	}
+	
+//---  Operations   ---------------------------------------------------------------------------
 	
 	public void setConfigPageNames(Set<String> names, String active) {
 		configNames = new ArrayList<String>(names);

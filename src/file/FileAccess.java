@@ -3,7 +3,6 @@ import java.io.File;
 
 import filemeta.config.Config;
 import filemeta.config.ValidateFiles;
-import filemeta.config.blueprint.ConfigBlueprint;
 
 /**
  * 

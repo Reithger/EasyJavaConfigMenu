@@ -108,6 +108,7 @@ public class ConfigWindow implements PromptConfigSwap{
 	@Override
 	public void updateActivePage(String name) {
 		if(pages.containsKey(name)) {
+			pages.get(activePage).getPanelReference().removeAllElements();
 			wf.hidePanel(activePage);
 			activePage = name;
 			wf.showPanel(activePage);

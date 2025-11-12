@@ -36,9 +36,9 @@ public class TestConfigMenu {
 			// Though the order of "which row, which column, how large" feels more sensical
 			fl.addBasicText("basic", 0, 0, 2, 1, "Property 1");
 			fl.addTextInput("basic2", 0, 2, 1, 1, "Value");
-			fl.addButton("property 1", 0, 3, 1, 1, "Update", 5);
+			//fl.addButton("property 1", 0, 3, 1, 1, "Update", 5);
 			
-			fl.addBehaviorUpdateConfigProperty(5, "basic2", "test_val");
+			//fl.addBehaviorUpdateConfigProperty(5, "basic2", "test_val");
 			
 			fl.addBasicText("basic1", 1, 0, 1, 1, "Test");
 			fl.addBasicText("basic3", 1, 1, 1, 2, "Test");

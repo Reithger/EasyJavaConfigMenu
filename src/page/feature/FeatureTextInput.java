@@ -15,7 +15,7 @@ public class FeatureTextInput extends Feature{
 	
 	private final static int CODE_START_TEXT_INPUT = 34523;
 	
-	private static int nextCodeValue;
+	private static volatile int nextCodeValue;
 	
 	private int codeValue;
 	
@@ -32,8 +32,14 @@ public class FeatureTextInput extends Feature{
 	
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
-		storedValue = hp.getElementStoredText(getElementName()) == null ? storedValue : hp.getElementStoredText(getElementName());
-		hp.handleTextEntry(getElementName(), "basic", 5, x, y, width, height, codeValue, null, storedValue);
+		try {
+			if(hp.containsElement(getElementName())) {
+				storedValue = hp.getElementStoredText(getElementName());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		hp.handleTextEntry(getElementName(), "basic", 6, x, y, width, height, codeValue, null, storedValue);
 		hp.handleRectangle(getElementName() + "_rect", "basic", 3, x, y, width, height * 2 / 3, new Color(188, 188, 188), new Color(22, 22, 22));
 	}
 
