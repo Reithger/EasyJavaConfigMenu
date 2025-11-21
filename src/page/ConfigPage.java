@@ -3,11 +3,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import file.SpecificFileAccessor;
+import input.CustomEventReceiver;
 import page.behavior.Behavior;
 import page.behavior.FeatureReader;
 import page.behavior.PropertyAccessor;
 import page.feature.Feature;
 import page.feature.FeatureComposite;
+import page.feature.aspect.FeatureAspect;
 import visual.composite.HandlePanel;
 
 /**
@@ -51,7 +53,7 @@ import visual.composite.HandlePanel;
  * 
  */
 
-public class ConfigPage implements FeatureContentReader{
+public class ConfigPage implements FeatureContentReader, AspectAssigner{
 	
 //---  Instance Variables   -------------------------------------------------------------------
 
@@ -67,7 +69,7 @@ public class ConfigPage implements FeatureContentReader{
 	
 	private HashMap<Integer, ArrayList<Behavior>> behaviorCodeMap;
 	
-	private HandlePanel panel;
+	private volatile HandlePanel panel;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -77,12 +79,18 @@ public class ConfigPage implements FeatureContentReader{
 		layout = new FeatureComposite(title, 0, 0);
 		sidedeck = new ArrayList<Feature>();
 		behaviorCodeMap = new HashMap<Integer, ArrayList<Behavior>>();
-		panel = new HandlePanel(0, 0, 100, 100) {
+		panel = new HandlePanel(0, 0, 100, 100);
+		CustomEventReceiver cer = new CustomEventReceiver() {
+
 			@Override
 			public void clickEvent(int code, int x, int y, int type) {
 				processEvent(code);
+				super.clickEvent(code, x, y, type);
 			}
 		};
+		panel.setPriority(5);
+		panel.setEventReceiver(cer);
+		panel.requestFocusInWindow();
 	}
 
 //---  Operations   ---------------------------------------------------------------------------
@@ -98,29 +106,17 @@ public class ConfigPage implements FeatureContentReader{
 	
 	public void draw(int x, int y, int wid, int hei) {
 		if(panel.getWidth() != wid || panel.getHeight() != hei) {
-			System.out.println("Resize");
 			panel.resize(wid, hei);
 			panel.removeAllElements();
 		}
 		if(panel.getPanelXLocation() != x || panel.getPanelYLocation() != y) {
-			System.out.println("Relocate");
 			panel.setLocation(x, y);
 		}
-		layout.draw(panel, 0, 0, wid, hei);
+		layout.handleDraw(panel, 0, 0, wid, hei);
 	}
 	
-	/**
-	 * Decided that all Feature objects can store some kind of dynamic data relevant to itself, not
-	 * just those that take user input/interaction to decide a value field.
-	 * 
-	 * May just be the text assigned to it to display as an informational Feature, may be data submitted
-	 * via user interaction
-	 * 
-	 */
-	
-	public String getFeatureDataContents(String featureIdentifier) {
-		Feature f = layout.findFeature(featureIdentifier);
-		return f.getDataContent();
+	public void allocateRowProportions(int[] rowProps) {
+		layout.populateRows(rowProps);
 	}
 
 	private void processEvent(int in) {
@@ -137,14 +133,6 @@ public class ConfigPage implements FeatureContentReader{
 			behaviorCodeMap.put(codeIn, new ArrayList<Behavior>());
 		}
 		behaviorCodeMap.get(codeIn).add(behav);
-	}
-
-	public void conferFileAccess(PropertyAccessor in, String property) {
-		in.assignPropertyAccessor(sfa.getPropertyAccessor(property));
-	}
-	
-	public void conferFeatureAccess(FeatureReader in) {
-		in.assignFeatureContentReader(this);
 	}
 
 	/**
@@ -166,6 +154,26 @@ public class ConfigPage implements FeatureContentReader{
 	public boolean addFeature(Feature newFeature, int row, int column) {
 		return layout.addFeature(newFeature, row, column);
 	}
+
+	//-- Visitor Value Assignment Machine  --------------------
+	
+	@Override
+	public void assignFeatureAspect(FeatureAspect aspect, String featureName) {
+		Feature f = layout.findFeature(featureName);
+		if(f != null) {
+			f.attachAspect(aspect.copy());
+		}
+	}
+
+	public void conferFileAccess(PropertyAccessor in, String property) {
+		in.assignPropertyAccessor(sfa.getPropertyAccessor(property));
+	}
+	
+	public void conferFeatureAccess(FeatureReader in) {
+		in.assignFeatureContentReader(this);
+	}
+
+	//-- Sidedeck/Feature Composition  ------------------------
 	
 	/**
 	 * 
@@ -225,6 +233,26 @@ public class ConfigPage implements FeatureContentReader{
 	
 //---  Getter Functions   ---------------------------------------------------------------------
 	
+	/**
+	 * For ease of use, the user should define each row's size (how many segments the
+	 * horizontal space is split into) before adding anything, and the FeatureLoader
+	 * class for building a ConfigPage expects that you have done this.
+	 * 
+	 * TODO: Make an option to turn that and any auto-formatting off
+	 * 
+	 * @return
+	 */
+	
+	public boolean getInitiatedRowStatus() {
+		return layout.getInitiatedStatus();
+	}
+
+	@Override
+	public String getFeatureDataContents(String featureIdentifier) {
+		Feature f = layout.findFeature(featureIdentifier);
+		return f.getDataContent();
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -233,4 +261,16 @@ public class ConfigPage implements FeatureContentReader{
 		return panel;
 	}
 	
+//---  Support Methods   ----------------------------------------------------------------------
+	
+	/**
+	 * Debug function to see what the horizontal proportion of each Feature in each row
+	 * of the FeatureComposite underlying this ConfigPage has.
+	 * 
+	 */
+	
+	public void printRowWidths() {
+		layout.printRowWidths();
+	}
+
 }

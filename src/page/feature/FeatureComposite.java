@@ -1,6 +1,5 @@
 package page.feature;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import visual.composite.HandlePanel;
@@ -27,17 +26,24 @@ import visual.composite.HandlePanel;
 
 public class FeatureComposite extends Feature {
 	
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	private ArrayList<ArrayList<Feature>> layout;
+	/** boolean to denote whether 'populateRows' was called to create initial row sizes*/
+	private boolean initiated;
+	
+//---  Constructors   -------------------------------------------------------------------------
 	
 	public FeatureComposite(String inTitle, int proportionHorizontal, int proportionVertical) {
 		super(inTitle, proportionHorizontal, proportionVertical);
 		layout = new ArrayList<ArrayList<Feature>>();
+		initiated = false;
 	}
 
+//---  Operations   ---------------------------------------------------------------------------
+	
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
-		// TODO This has all of the logic for drawing the Features within the Composite;
-		//      calculating positions based on proportion values and whatnot.
 
 		int currY = 0;
 		for(ArrayList<Feature> arr : layout) {
@@ -53,29 +59,33 @@ public class FeatureComposite extends Feature {
 			for(Feature f : arr) {
 				int heiUse = heiAlloc * f.getVerticalProportion();
 				int widUse = widAlloc * f.getHorizontalProportion();
-				f.draw(hp, currX + widUse / 2, currY + heiUse / 2, widUse, heiUse);
+				f.handleDraw(hp, currX + widUse / 2, currY + heiUse / 2, widUse, heiUse);
 				currX += widAlloc * f.getHorizontalProportion();
 			}
 			currY += heiAlloc;
 		}
 	}
-	
-	public boolean detectCollision() {
-		// TODO: Detect if any Features overlap
-		return false;
-	}
 
 	/**
+	 * Initiation function that takes an array of integers and uses each as an indicator
+	 * of what each row's horizontal proportion amount should be; that is, how many segments
+	 * each row should be split up into so that a Feature with horizontal proportion of 1
+	 * will have 1 / [amount in the array for that row].
 	 * 
-	 * This is kinda complicated for this context, will consider
-	 * TODO
+	 * This is to simplify backend logic for automated formatting.
 	 * 
+	 * @param rowHorizontalProps
 	 */
 	
-	public String getDataContent() {
-		return null;
+	public void populateRows(int[] rowHorizontalProps) {
+		initiated = true;
+		for(int i = 0; i < rowHorizontalProps.length; i++) {
+			this.addFeature(new FeatureSpacing(FeatureSpacing.CAN_REMOVE, rowHorizontalProps[i], 1), i, 0);
+		}
 	}
-
+	
+	//-- Positioning Logic  -----------------------------------
+	
 	/**
 	 * Assuming 0-indexing for counting the row and column numbers
 	 * 
@@ -121,7 +131,8 @@ public class FeatureComposite extends Feature {
 	 */
 	
 	public boolean addFeature(Feature newFeature, int row, int column) {
-		if(row < 0) {
+		//System.out.println("---add feature: " + newFeature.getTitle() + ", " + row + ", " + column);
+		if(row < 0 || !initiated) {
 			return false;
 		}
 		while(layout.size() <= row) {
@@ -147,27 +158,13 @@ public class FeatureComposite extends Feature {
 		// If takes up multiple vertical rows, needs to buffer space beneath itself to avoid collisions
 		if(vertProp > 1) {
 			addFeature(new FeatureSpacing(FeatureSpacing.NO_REMOVE, newFeature.getHorizontalProportion(), vertProp - 1), row + 1, column);
+			if(effectiveRowWidth(row + 1) < effectiveRowWidth(row)) {
+				addFeature(new FeatureSpacing(FeatureSpacing.CAN_REMOVE, effectiveRowWidth(row) - effectiveRowWidth(row + 1), 1), row + 1, effectiveRowWidth(row));
+			}
 		}
 		return true;
 	}
-	
-	/**
-	 * Calculates what the effective width of a row is based on each Feature's horizontal
-	 * proportion values.
-	 * 
-	 * @param row
-	 * @return
-	 */
-	
-	private int effectiveRowWidth(int row) {
-		ArrayList<Feature> list = layout.get(row);
-		int out = 0;
-		for(Feature f : list) {
-			out += f.getHorizontalProportion();
-		}
-		return out;
-	}
-	
+
 	/**
 	 * Local method to find where in a row to actually add a feature object based on effective
 	 * column positioning from each feature's horizontal proportion values.
@@ -185,46 +182,85 @@ public class FeatureComposite extends Feature {
 	 */
 	
 	private boolean insertFeature(int row, int desiredColumn, Feature newFeature) {
+		//System.out.println("Row: " + layout.get(row));
 		ArrayList<Feature> list = layout.get(row);
+		/*
+		String use = "";
+		for(Feature f : list) {
+			use = use + " " + f.getHorizontalProportion();
+		}
+		System.out.println(use);
+		*/
 		int currCol = 0;
 		int ind = 0;
 		for(int i = 0; i < list.size(); i++) {
 			Feature f = list.get(i);
+			//System.out.println(" " + currCol + " " + ind);
 			// If we have found the index at which point we are at or over the desired column position...
 			if(desiredColumn <= currCol) {
-				// If we have gone over the desired column position, trim the preceding Feature if able to
-				if(desiredColumn < currCol) {
-					int over = currCol - desiredColumn;
-					Feature l = list.get(ind - 1);
-
-					// If we are able to manipulate the size of the Feature behind us...
-					if(l.getTitle().equals(FeatureSpacing.CAN_REMOVE)) {
-						// Check if the preceding feature is so large that the new Feature splits it in two
-						if(over > desiredColumn + newFeature.getHorizontalProportion()) {
-							// Effectively, just break the FeatureSpacing in half and let eatSpacing resolve it
-							int upWid = currCol - desiredColumn;
-							int lowWid = l.getHorizontalProportion() - upWid;
-							list.remove(ind - 1);
-							list.add(ind - 1, new FeatureSpacing(FeatureSpacing.CAN_REMOVE, lowWid, 1));
-							list.add(ind, new FeatureSpacing(FeatureSpacing.CAN_REMOVE, upWid, 1));
-						}
-						// Otherwise, we just have to trim the front of the preceding feature
-						else {
-							int newHorz = l.getHorizontalProportion() - over;
-							list.remove(ind - 1);
-							list.add(ind - 1, new FeatureSpacing(FeatureSpacing.CAN_REMOVE, newHorz, 1));
-						}
-					}
-				}
-				// Then add the Feature and trim any following Features to reserve that space if able to
-				list.add(ind, newFeature);
-				int horz = newFeature.getHorizontalProportion();
-				return eatSpacing(row, ind, horz);
+				//  Call function for identifying the feature at this index and splitting it apart if able to
+				return splitSpacer(desiredColumn, currCol, ind, row, newFeature);
 			}
 			currCol += f.getHorizontalProportion();
 			ind += 1;
 		}
-		return false;
+		return splitSpacer(desiredColumn, currCol, ind, row, newFeature);
+	}
+	
+	/**
+	 * Local helper function that takes a new Feature, the desired column location of it, and the
+	 * calculated actual column position of the first Feature that's column goes past or equal to
+	 * the desired position of the new Feature.
+	 * 
+	 * Basically, we want to add something at position x. If a removable/editable feature overlaps
+	 * position x, we want to trim or split that feature to make space for our new Feature to fit
+	 * inside of there. We check if the Feature is large enough to need to be split in two (as
+	 * we expect to call 'eatSpacing' afterwards so would there still be some spacing leftover
+	 * in front of the new Feature once we insert the new Feature) and then either trim the
+	 * spacer behind the new Feature or split the n-length spacing into two spacers of l and n
+	 * lengths where l + m = n.
+	 * 
+	 * @param desiredColumn
+	 * @param currCol
+	 * @param ind
+	 * @param row
+	 * @param newFeature
+	 * @return
+	 */
+	
+	private boolean splitSpacer(int desiredColumn, int currCol, int ind, int row, Feature newFeature) {
+		// If we have gone over the desired column position, trim the preceding Feature if able to
+		ArrayList<Feature> list = layout.get(row);
+		if(desiredColumn < currCol) {
+			int over = currCol - desiredColumn;
+			Feature l = list.get(ind - 1);
+
+			// If we are able to manipulate the size of the Feature behind us...
+			if(l.getTitle().equals(FeatureSpacing.CAN_REMOVE)) {
+				//System.out.println("Can remove prior feature");
+				// Check if the preceding feature is so large that the new Feature splits it in two
+				if(over >= newFeature.getHorizontalProportion()) {
+					//System.out.println("Will split prior feature");
+					// Effectively, just break the FeatureSpacing in half and let eatSpacing resolve it
+					int upWid = currCol - desiredColumn;
+					int lowWid = l.getHorizontalProportion() - upWid;
+					list.remove(ind - 1);
+					list.add(ind - 1, new FeatureSpacing(FeatureSpacing.CAN_REMOVE, lowWid, 1));
+					list.add(ind, new FeatureSpacing(FeatureSpacing.CAN_REMOVE, upWid, 1));
+				}
+				// Otherwise, we just have to trim the front of the preceding feature
+				else {
+					//System.out.println("Trim");
+					int newHorz = l.getHorizontalProportion() - over;
+					list.remove(ind - 1);
+					list.add(ind - 1, new FeatureSpacing(FeatureSpacing.CAN_REMOVE, newHorz, 1));
+				}
+			}
+		}
+		// Then add the Feature and trim any following Features to reserve that space if able to
+		list.add(ind, newFeature);
+		int horz = newFeature.getHorizontalProportion();
+		return eatSpacing(row, ind, horz);
 	}
 	
 	/**
@@ -247,9 +283,12 @@ public class FeatureComposite extends Feature {
 	 */
 	
 	private boolean eatSpacing(int row, int index, int removalAmount) {
+		//System.out.println("Row: " + layout.get(row));
+		//System.out.println("Eat: " + row + ", " + index + ", " + removalAmount);
 		ArrayList<Feature> list = layout.get(row);
 		for(int i = index + 1; i < list.size(); i++) {
 			if(list.get(i).getTitle().equals(FeatureSpacing.CAN_REMOVE)) {
+				//System.out.println("Can remove");
 				int horz = list.get(i).getHorizontalProportion();
 				int deduct = removalAmount - horz;
 				if(deduct == 0) {
@@ -273,6 +312,35 @@ public class FeatureComposite extends Feature {
 		}
 		return false;
 	}
+
+//---  Getter Methods   -----------------------------------------------------------------------
+
+	public String getDataContent() {
+		return null;
+	}
+	
+	@Override
+	public String getDataContent(String identifier) {
+		if(getTitle().equals(identifier)) {
+			return getDataContent();
+		}
+		if(findFeature(identifier) != null) {
+			return findFeature(identifier).getDataContent();
+		}
+		for(ArrayList<Feature> row : layout) {
+			for(Feature f : row) {
+				String out = f.getDataContent(identifier);
+				if(out != null) {
+					return out;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean getInitiatedStatus() {
+		return initiated;
+	}
 	
 	public Feature findFeature(String identifier){
 		for(ArrayList<Feature> arr : layout) {
@@ -283,6 +351,36 @@ public class FeatureComposite extends Feature {
 			}
 		}
 		return null;		
+	}
+	
+//---  Support Methods   ----------------------------------------------------------------------
+
+	public void printRowWidths() {
+		System.out.println("Current Row Widths for # rows: " + layout.size());
+		for(ArrayList<Feature> arr : layout) {
+			String use= "";
+			for(Feature f : arr) {
+				use = use + " " + f.getHorizontalProportion();
+			}
+			System.out.println(use);
+		}
+	}
+
+	/**
+	 * Calculates what the effective width of a row is based on each Feature's horizontal
+	 * proportion values.
+	 * 
+	 * @param row
+	 * @return
+	 */
+	
+	private int effectiveRowWidth(int row) {
+		ArrayList<Feature> list = layout.get(row);
+		int out = 0;
+		for(Feature f : list) {
+			out += f.getHorizontalProportion();
+		}
+		return out;
 	}
 	
 }

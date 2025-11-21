@@ -30,6 +30,7 @@ package page.behavior;
 
 public abstract class Behavior {
 
+	/** String identifier for the Behavior to reference for the purpose of doing something with it*/
 	private String featureIdentifier;
 	
 	public Behavior(String featureReference) {

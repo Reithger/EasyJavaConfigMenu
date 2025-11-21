@@ -5,6 +5,7 @@ import page.feature.FeatureButton;
 import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
 import page.feature.FeatureTextInput;
+import page.feature.aspect.FeatureAspectLoader;
 import page.behavior.BehaviorConfigUpdate;
 import page.feature.Feature;
 
@@ -16,6 +17,9 @@ import page.feature.Feature;
  * 
  * Will contain all of the 'addFeature' functions for ease of use via API logic for user without
  * bloating ConfigPage or ConfigMenu classes that manage other points of logic.
+ * 
+ * NOTE: Part of the condition of using this is you *need* to allocate row horizontal proportions
+ * ahead of time because it is hell to on-the-fly interpret spacing allocations.
  * 
  * You can set the FeatureLoader to be in 3 modes:
  *  - MODE_ADD, which directly adds the specified Feature to the page at the row/column specified
@@ -52,6 +56,8 @@ public class FeatureLoader {
 	
 	private ConfigPage page;
 	
+	private FeatureAspectLoader fal;
+	
 	private int mode;
 	
 //---  Constructors   -------------------------------------------------------------------------
@@ -59,6 +65,10 @@ public class FeatureLoader {
 	public FeatureLoader(ConfigPage cp) {
 		page = cp;
 		mode = MODE_ADD;
+	}
+	
+	public void allocateRowSpacing(int[] rowHorizontalProportions) {
+		page.allocateRowProportions(rowHorizontalProportions);
 	}
 	
 //---  Mode Setting   -------------------------------------------------------------------------
@@ -136,7 +146,7 @@ public class FeatureLoader {
 		Feature f = new FeatureTextInput(title, horizProportion, vertProportion, defaultText);
 		handleFeature(f, row, column);
 	}
-
+	
 //---  Behavior Adding   ----------------------------------------------------------------------
 	
 	public void addBehaviorUpdateConfigProperty(int codeMatch, String featureReference, String propertyUpdate) {
@@ -165,13 +175,28 @@ public class FeatureLoader {
 		page.offloadComposedFeature(title, row, column);
 	}
 	
+	public FeatureAspectLoader getAspectMaker() {
+		fal = new FeatureAspectLoader(page);
+		return fal;
+	}
+	
 //---  Support Methods   ----------------------------------------------------------------------
 
+	public void checkRowWidths() {
+		page.printRowWidths();
+	}
+	
 	private void handleFeature(Feature in, int row, int column) throws Exception{
+		if(!page.getInitiatedRowStatus()) {
+			throw new Exception("Error! Attempt to add Features to ConfigPage without allocating row widths first.");
+		}
 		switch(mode) {
 			case MODE_ADD:
 				if(!page.addFeature(in, row, column)) {
 					throw new Exception("Spacing Overlap! Feature: " + in.getTitle() + " caused unmanageable positioning conflict");
+				}
+				if(fal != null && fal.getApplyToAll()) {
+					fal.attachFeatureAspect(in.getTitle());
 				}
 				break;
 			case MODE_SIDE_DECK:

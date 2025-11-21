@@ -1,5 +1,6 @@
 import main.ConfigMenu;
 import page.FeatureLoader;
+import page.feature.aspect.FeatureAspectLoader;
 
 public class TestConfigMenu {
 
@@ -29,25 +30,57 @@ public class TestConfigMenu {
 		 *  - when adding a feature to a spot taken up by spacing, substitutes itself into the place of those
 		 *    spacing features so that auto-added buffering is not causing collisions with intended placements
 		 * 
+		 * This gets complicated by auto-adding Features setting what a row's width/placement is in a way that
+		 * is very hard to retrofit if they later add other Features to it; this is primarily the case if
+		 * a Feature has more than 1 vertical proportion so it's placement needs to be relative to the above
+		 * row's total width and amount of horizontal proportions but the below rows may have that change
+		 * as they are defined; how do you know a row of [1, 1, 1] proportions should actually be a [2, 2, 2]
+		 * to incorporate placing something at position 1 or 5?
+		 * 
+		 * So the user needs to define row widths ahead of time (total row horizontal proportion) to save me
+		 * from this dire fate.
+		 * 
 		 */
 		FeatureLoader fl = cm.getFeatureLoader("test");
 		try {
+			cm.resizeConfigWindow(350, 500);
+			
+			fl.allocateRowSpacing(new int[] {4, 6, 6});
+
+			FeatureAspectLoader fal = fl.getAspectMaker();
+			fal.applyAspectToAll();
+			fal.loadAspectLineSurround();
+			
 			// input format also anti-intuitive, effectively "y, x, wid, hei"
 			// Though the order of "which row, which column, how large" feels more sensical
+			
 			fl.addBasicText("basic", 0, 0, 2, 1, "Property 1");
+			
 			fl.addTextInput("basic2", 0, 2, 1, 1, "Value");
-			//fl.addButton("property 1", 0, 3, 1, 1, "Update", 5);
 			
-			//fl.addBehaviorUpdateConfigProperty(5, "basic2", "test_val");
+			fl.addButton("property 1", 0, 3, 1, 1, "Update", 5);
 			
-			fl.addBasicText("basic1", 1, 0, 1, 1, "Test");
-			fl.addBasicText("basic3", 1, 1, 1, 2, "Test");
-			fl.addReferenceText("reference", 1, 2, 1, 1, "H: ", "test_val");
+			fl.addBehaviorUpdateConfigProperty(5, "basic2", "test_val");
 			
-			fl.addBasicText("basic4", 2, 5, 1, 1, "Test");
-			fl.addTextInput("basic4", 2, 2, 1, 1, "Test");
+			fl.addBasicText("basic1", 1, 0, 2, 1, "Test1");
+			fl.addBasicText("basic3", 1, 2, 2, 2, "Test2");
 			
-			cm.resizeConfigWindow(250, 400);
+			fl.addReferenceText("reference", 1, 4, 2, 1, "H: ", "test_val");
+
+			
+			fl.addBasicText("basic4", 2, 0, 1, 1, "Test3");
+			
+			
+			fl.addTextInput("basic5", 2, 4, 1, 1, "Test4");
+			fl.addTextInput("basic6", 2, 5, 1, 1, "Test5");
+
+
+			fl.checkRowWidths();
+			
+			
+			//fal.attachFeatureAspect("basic1");
+			//fal.attachFeatureAspect("basic2");
+			
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -57,7 +90,9 @@ public class TestConfigMenu {
 		try {
 			cm.addConfigPage("other", "./");
 			fl = cm.getFeatureLoader("other");
+			fl.allocateRowSpacing(new int[] {2});
 			fl.addBasicText("basic", 0, 0, 1, 1, "other");
+			fl.addTextInput("basic2", 0, 2, 1, 1, "Value");
 		}
 		catch(Exception e) {
 			e.printStackTrace();

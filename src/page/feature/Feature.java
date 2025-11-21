@@ -1,5 +1,6 @@
 package page.feature;
 
+import page.feature.aspect.FeatureAspect;
 import visual.composite.HandlePanel;
 
 /**
@@ -52,6 +53,8 @@ import visual.composite.HandlePanel;
 
 public abstract class Feature {
 
+	private FeatureAspect wrap;
+	
 	private String title;
 	
 	private int horzProportion;
@@ -64,9 +67,53 @@ public abstract class Feature {
 		vertProportion = proportionVertical;
 	}
 	
-	public abstract void draw(HandlePanel hp, int x, int y, int width, int height);
+	public void handleDraw(HandlePanel hp, int x, int y, int width, int height) { 
+		if(wrap != null) {
+			wrap.draw(hp, x, y, width, height);
+		}
+		draw(hp, x, y, width, height);
+	}
+	
+	public void attachAspect(FeatureAspect in) {
+		if(wrap == null) {
+			wrap = in;
+		}
+		else {
+			wrap.add(in);
+		}
+	}
+	
+	protected abstract void draw(HandlePanel hp, int x, int y, int width, int height);
+	
+	/**
+	 * Basic getter function to retrieve any data content of a Feature as a String object;
+	 * this is highly variable in its format as some Features don't store dynamic data but
+	 * may have some relevant information if auto-populated from a file.
+	 * 
+	 * @return
+	 */
 	
 	public abstract String getDataContent();
+	
+	/**
+	 * Variation of getDataContent which take an additional String identifier; its a redundant
+	 * check for most Features, as it will just ensure that the getTitle() of a Feature matches
+	 * the String identifier provided.
+	 * 
+	 * However, for a FeatureComposite, it will prompt it to check all of its composite Features
+	 * for one that matches the given identifier and return its data, potentially filtering down
+	 * into another FeatureComposite's Features.
+	 * 
+	 * Default implemented as re-directing to the regular getDataContent but overriden by
+	 * FeatureComposite.
+	 * 
+	 * @param identifier
+	 * @return
+	 */
+	
+	public String getDataContent(String identifier) {
+		return getDataContent();
+	}
 	
 	public String getTitle() {
 		return title;

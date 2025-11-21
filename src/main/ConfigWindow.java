@@ -34,11 +34,11 @@ public class ConfigWindow implements PromptConfigSwap{
 	
 	private HashMap<String, ConfigPage> pages;
 	
-	private String activePage;
+	private volatile String activePage;
 	
-	private ConfigSelectorPanel csp;
+	private volatile ConfigSelectorPanel csp;
 	
-	private WindowFrame wf;
+	private volatile WindowFrame wf;
 	
 	public ConfigWindow() {
 		pages = new HashMap<String, ConfigPage>();
@@ -47,6 +47,7 @@ public class ConfigWindow implements PromptConfigSwap{
 		wf = new WindowFrame(100, 100) {
 			@Override
 			public void repaint() {
+				super.repaint();
 				if(pages.size() == 0) {
 					return;
 				}
@@ -59,12 +60,11 @@ public class ConfigWindow implements PromptConfigSwap{
 				else {
 					pages.get(activePage).draw(0, 0, wid, hei);
 				}
-				super.repaint();
 			}
 		};
 		wf.setName("Easy Java Config Menu");
 		wf.setBackgroundColor(new Color(188, 188, 188));
-		//wf.showWindow();
+		wf.showWindow();
 	}
 	
 	public void display(int wid, int hei) {
@@ -77,15 +77,21 @@ public class ConfigWindow implements PromptConfigSwap{
 	public void addConfigPage(ConfigPage in) {
 		pages.put(in.getTitle(), in);
 		wf.addPanel(in.getTitle(), in.getPanelReference());
-		wf.hidePanel(in.getTitle());
 		if(activePage == null) {
 			activePage = in.getTitle();
-			wf.showPanel(activePage);
+		}
+		else {
+			wf.hidePanel(in.getTitle());
 		}
 		if(pages.size() > 1 && csp == null) {
 			csp = new ConfigSelectorPanel(0, 0, 100, 100, this);
-			csp.setConfigPageNames(pages.keySet(), activePage);
+			csp.addConfigPageName(activePage);
+			csp.addConfigPageName(in.getTitle());
+			csp.setActiveConfig(activePage);
 			wf.addPanel("';'Special Internal Selector';'", csp);
+		}
+		else if(csp != null){
+			csp.addConfigPageName(in.getTitle());
 		}
 	}
 	
@@ -101,18 +107,25 @@ public class ConfigWindow implements PromptConfigSwap{
 				updateActivePage(pages.keySet().iterator().next());
 			}
 			wf.removePanel(name);
-			csp.setConfigPageNames(pages.keySet(), activePage);
+			csp.removeConfigPageName(name);
 		}
 	}
 
 	@Override
 	public void updateActivePage(String name) {
-		if(pages.containsKey(name)) {
-			pages.get(activePage).getPanelReference().removeAllElements();
+		
+		System.out.println(name);
+		
+		if(pages.containsKey(name) && !name.equals(activePage)) {
 			wf.hidePanel(activePage);
 			activePage = name;
 			wf.showPanel(activePage);
-			csp.setConfigPageNames(pages.keySet(), activePage);
+			csp.setActiveConfig(name);
+			getConfigPage(activePage).getPanelReference().requestFocusInWindow();
+			//wf.hidePanel("';'Special Internal Selector';'");
+			
+			//TODO: For some reason we have to re-show this Panel so that other Panels don't lose the ability to be focused on.
+			wf.showPanel("';'Special Internal Selector';'");
 		}
 	}
 	

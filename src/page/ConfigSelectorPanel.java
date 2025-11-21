@@ -2,8 +2,8 @@ package page;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Set;
 
+import input.CustomEventReceiver;
 import visual.composite.HandlePanel;
 
 /**
@@ -38,7 +38,9 @@ public class ConfigSelectorPanel extends HandlePanel{
 	
 	private String currActive;
 	
-	private PromptConfigSwap pcs;
+	private volatile PromptConfigSwap pcs;
+	
+	private boolean redraw;
 	
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -46,19 +48,56 @@ public class ConfigSelectorPanel extends HandlePanel{
 		super(x, y, width, height);
 		configNames = new ArrayList<String>();
 		pcs = configSwap;
+		this.setPriority(1);
+		CustomEventReceiver cer = new CustomEventReceiver() {
+			
+			@Override
+			public void clickEvent(int code, int x, int y, int type) {
+				int select = code - START_CODE;
+				
+				if(select >= 0 && select < configNames.size()) {
+					pcs.updateActivePage(configNames.get(select));
+					removeAllElements();
+				}
+				setAttention(false);
+				super.clickEvent(code, x, y, type);
+				
+			}
+			
+			@Override
+			public void keyEvent(char key) {
+				System.out.println(key);
+			}
+		};
+		this.setEventReceiver(cer);
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
 	
-	public void setConfigPageNames(Set<String> names, String active) {
-		configNames = new ArrayList<String>(names);
-		currActive = active;
+	public void addConfigPageName(String name) {
+		configNames.add(name);
+		redraw = true;
+	}
+	
+	public void setActiveConfig(String in) {
+		currActive = in;
+		redraw = true;
+	}
+	
+	public void removeConfigPageName(String name) {
+		configNames.remove(name);
+		redraw = true;
 	}
 	
 	public void draw(int wid, int hei) {
+		//System.out.println("CSP: " + getFocusElement());
 		if(getWidth() != wid || getHeight() != hei) {
 			resize(wid, hei);
 			removeAllElements();
+		}
+		if(redraw) {
+			removeAllElements();
+			redraw = false;
 		}
 		int widSpace = this.getWidth() / configNames.size();
 		boolean needScroll = widSpace < MIN_TAB_SPACE;
@@ -77,16 +116,6 @@ public class ConfigSelectorPanel extends HandlePanel{
 	public int selectorBarHeight() {
 		return getWidth() / configNames.size() < MIN_TAB_SPACE ? 2 * TAB_HEIGHT : TAB_HEIGHT;
 	}
-	
-	@Override
-	public void clickEvent(int code, int x, int y, int type) {
-		//TODO: This is where button code associates to a config page
-		int select = code - START_CODE;
-		
-		if(select >= 0 && select < configNames.size()) {
-			pcs.updateActivePage(configNames.get(select));
-			removeAllElements();
-		}
-	}
+
 
 }

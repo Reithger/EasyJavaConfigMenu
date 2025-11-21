@@ -46,9 +46,9 @@ public class FeatureButton extends Feature{
 
 	@Override
 	public void draw(HandlePanel hp, int x, int y, int width, int height) {
-		// TODO Auto-generated method stub
-		// Just draws a button here and associates the codeValue int to it for the SVI event handling
-		hp.handleTextButton("button_" + display + "_" + codeValue, "basic", 5, x, y, width, height, null, display, codeValue, COLOR_BACKING, COLOR_OUTLINE);
+		int useWid = width * 9 / 10;
+		int useHei = height * 7 / 10;
+		hp.handleTextButton("button_" + display + "_" + codeValue, "basic", 5, x, y, useWid, useHei, null, display, codeValue, COLOR_BACKING, COLOR_OUTLINE);
 	}
 
 }
