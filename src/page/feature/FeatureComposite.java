@@ -24,7 +24,7 @@ import visual.composite.HandlePanel;
  * 
  */
 
-public class FeatureComposite extends Feature {
+public class FeatureComposite extends Feature implements FeatureFinder{
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -32,11 +32,14 @@ public class FeatureComposite extends Feature {
 	/** boolean to denote whether 'populateRows' was called to create initial row sizes*/
 	private boolean initiated;
 	
+	private ArrayList<FeatureComposite> subLayouts;
+	
 //---  Constructors   -------------------------------------------------------------------------
 	
 	public FeatureComposite(String inTitle, int proportionHorizontal, int proportionVertical) {
 		super(inTitle, proportionHorizontal, proportionVertical);
 		layout = new ArrayList<ArrayList<Feature>>();
+		subLayouts = new ArrayList<FeatureComposite>();
 		initiated = false;
 	}
 
@@ -145,9 +148,16 @@ public class FeatureComposite extends Feature {
 		int vertProp = newFeature.getVerticalProportion();
 		// If we're adding to a row and our position is past the end of it, buffer space before for effective positioning
 		if(rowSize <= column) {
-			if(column - rowSize > 0)
-				layout.get(row).add(new FeatureSpacing(FeatureSpacing.CAN_REMOVE, column - rowSize, 1));
+			if(column - rowSize > 0) {
+				Feature sp = new FeatureSpacing(FeatureSpacing.CAN_REMOVE, column - rowSize, 1);
+				layout.get(row).add(sp);
+			}
 			layout.get(row).add(newFeature);
+			if(newFeature.getDataContent() == null) {
+				//TODO: This is bad and I don't like doing it but not sure what a better way is
+				//To clarify, casting to a specific type while using generics everywhere else
+				subLayouts.add((FeatureComposite)newFeature);
+			}
 		}
 		// Otherwise, just add it at that spot; need to check for overlap with a spacing, should replace any blank spacing
 		else {
@@ -219,6 +229,8 @@ public class FeatureComposite extends Feature {
 	 * in front of the new Feature once we insert the new Feature) and then either trim the
 	 * spacer behind the new Feature or split the n-length spacing into two spacers of l and n
 	 * lengths where l + m = n.
+	 * 
+	 * TODO: spacing added in here should probably be assigned this composite as a parent
 	 * 
 	 * @param desiredColumn
 	 * @param currCol
@@ -313,8 +325,60 @@ public class FeatureComposite extends Feature {
 		return false;
 	}
 
+	//-- Feature Finding  -------------------------------------
+	
+	@Override
+	public int findFeatureRow(String identifier) {
+		int row = 0;
+		for(ArrayList<Feature> arr : layout) {
+			for(Feature f : arr) {
+				if(f.getTitle().equals(identifier)) {
+					return row;
+				}
+			}
+			row++;
+		}
+		return -1;	
+	}
+	
+	@Override
+	public int findFeatureColumn(String identifier) {
+		for(ArrayList<Feature> arr : layout) {
+			int col = 0;
+			for(Feature f : arr) {
+				if(f.getTitle().equals(identifier)) {
+					return col;
+				}
+				col += f.getHorizontalProportion();
+			}
+		}
+		return -1;	
+	}
+	
+	@Override
+	public FeatureFinder findPossessingComposite(String identifier) {
+		if(findFeature(identifier) != null) {
+			return this;
+		}
+		for(FeatureComposite fc : subLayouts) {
+			FeatureFinder out = fc.findPossessingComposite(identifier);
+			if(out != null) {
+				return out;
+			}
+		}
+		return null;
+	}
+	
 //---  Getter Methods   -----------------------------------------------------------------------
 
+	/**
+	 * 
+	 * This returns null so that we can identify that it's a FeatureComposite in other contexts,
+	 * not a good system and should be changed but make sure you update getDataContent(String)
+	 * if you change this from null.
+	 * 
+	 */
+	
 	public String getDataContent() {
 		return null;
 	}
@@ -329,9 +393,11 @@ public class FeatureComposite extends Feature {
 		}
 		for(ArrayList<Feature> row : layout) {
 			for(Feature f : row) {
-				String out = f.getDataContent(identifier);
-				if(out != null) {
-					return out;
+				if(f.getDataContent() == null) {
+					String out = f.getDataContent(identifier);
+					if(out != null) {
+						return out;
+					}
 				}
 			}
 		}

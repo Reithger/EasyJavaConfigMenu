@@ -4,7 +4,7 @@ import page.feature.aspect.FeatureAspect;
 import visual.composite.HandlePanel;
 
 /**
- * A feature is anything displayed on a page, be it uninteractible text/data or a variety
+ * A feature is anything displayed on a page, be it uninteractable text/data or a variety
  * of entry fields.
  * 
  * Features have a drawing instruction given a HandlePanel and their relative width/height to draw in.
@@ -53,19 +53,54 @@ import visual.composite.HandlePanel;
 
 public abstract class Feature {
 
+//---  Instance Variables   -------------------------------------------------------------------
+	
 	private FeatureAspect wrap;
-	
+
 	private String title;
-	
+	/** int value to denote how much of the horizontal space in a row to reserve for drawing, relative
+	 * to the total amount of horizontal proportions of all Features on that row*/
 	private int horzProportion;
-	
+	/** int value to denote how many rows beneath the starting row this Feature should draw into*/
 	private int vertProportion;
+	
+//---  Constructors   -------------------------------------------------------------------------
 	
 	public Feature(String inTitle, int proportionHorizontal, int proportionVertical) {
 		title = inTitle;
 		horzProportion = proportionHorizontal;
 		vertProportion = proportionVertical;
 	}
+	
+//---  Operations   ---------------------------------------------------------------------------
+
+	/**
+	 * Abstract function that is left to sub-classes to implement, defining how a Feature
+	 * should draw itself when given a HandlePanel to draw on, the x, y coordinate
+	 * positions of where to draw, and the allocated width/height it has to draw with.
+	 *
+	 * This function is not directly called by the user or other classes, but is called
+	 * by 'handleDraw' to incorporate the FeatureAspect layers of drawing.
+	 * 
+	 * @param hp
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	
+	protected abstract void draw(HandlePanel hp, int x, int y, int width, int height);
+	
+	/**
+	 * Public draw function that instructs FeatureAspects to draw themselves then
+	 * calls this object's draw() function that is defined for each subclass of Feature.
+	 * 
+	 * @param hp
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
 	
 	public void handleDraw(HandlePanel hp, int x, int y, int width, int height) { 
 		if(wrap != null) {
@@ -74,6 +109,17 @@ public abstract class Feature {
 		draw(hp, x, y, width, height);
 	}
 	
+	/**
+	 * Function to wrap a provided FeatureAspect object to the aspects associated with
+	 * this Feature object; FeatureAspects are attached drawing instructions independent
+	 * of the Feature's specifics that are drawn along with the Feature.
+	 * 
+	 * This is allow for things such as border-lines around the Feature to be drawn without
+	 * introducing new Features or complicated logic within ConfigPage/FeatureLoader.
+	 * 
+	 * @param in
+	 */
+
 	public void attachAspect(FeatureAspect in) {
 		if(wrap == null) {
 			wrap = in;
@@ -82,13 +128,24 @@ public abstract class Feature {
 			wrap.add(in);
 		}
 	}
+
+//---  Setter Methods   -----------------------------------------------------------------------
 	
-	protected abstract void draw(HandlePanel hp, int x, int y, int width, int height);
+	public void setTitle(String in) {
+		title = in;
+	}
+	
+//---  Getter Methods   -----------------------------------------------------------------------
 	
 	/**
 	 * Basic getter function to retrieve any data content of a Feature as a String object;
 	 * this is highly variable in its format as some Features don't store dynamic data but
 	 * may have some relevant information if auto-populated from a file.
+	 * 
+	 * Note: All Features need to return something that isn't null so that a FeatureComposite
+	 * can confirm that it contains this Feature. Not a perfect system but not too rough of one.
+	 * 
+	 * May have to have FeatureComposite return null so I can identify it, but I don't like that.
 	 * 
 	 * @return
 	 */
@@ -114,15 +171,11 @@ public abstract class Feature {
 	public String getDataContent(String identifier) {
 		return getDataContent();
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
-	
-	public void setTitle(String in) {
-		title = in;
-	}
-	
+
 	public int getHorizontalProportion() {
 		return horzProportion;
 	}

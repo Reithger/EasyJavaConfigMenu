@@ -27,7 +27,7 @@ public class FeatureTextInput extends Feature{
 			nextCodeValue = CODE_START_TEXT_INPUT;
 		}
 		codeValue = nextCodeValue++;
-		storedValue = defaultText;
+		storedValue = defaultText == null ? "" : defaultText;
 	}
 	
 	@Override

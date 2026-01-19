@@ -36,7 +36,7 @@ public class FeatureButton extends Feature{
 
 	public FeatureButton(String inTitle, int proportionHorizontal, int proportionVertical, String displayText, int code) {
 		super(inTitle, proportionHorizontal, proportionVertical);
-		display = displayText;
+		display = displayText == null ? "" : displayText;
 		codeValue = code;
 	}
 

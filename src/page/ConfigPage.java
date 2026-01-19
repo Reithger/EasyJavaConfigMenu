@@ -6,7 +6,9 @@ import file.SpecificFileAccessor;
 import input.CustomEventReceiver;
 import page.behavior.Behavior;
 import page.behavior.FeatureReader;
+import page.behavior.LayoutAccessor;
 import page.behavior.PropertyAccessor;
+import page.behavior.SideboardAccessor;
 import page.feature.Feature;
 import page.feature.FeatureComposite;
 import page.feature.aspect.FeatureAspect;
@@ -172,6 +174,14 @@ public class ConfigPage implements FeatureContentReader, AspectAssigner{
 	public void conferFeatureAccess(FeatureReader in) {
 		in.assignFeatureContentReader(this);
 	}
+	
+	public void conferLayoutAccess(LayoutAccessor in) {
+		in.assignLayoutAccessor(layout);
+	}
+	
+	public void conferSideboardFeature(SideboardAccessor in) {
+		in.allocateSideboardFeature(getSideboardFeature(in.getFeatureTitle()));
+	}
 
 	//-- Sidedeck/Feature Composition  ------------------------
 	
@@ -259,6 +269,15 @@ public class ConfigPage implements FeatureContentReader, AspectAssigner{
 	
 	public HandlePanel getPanelReference() {
 		return panel;
+	}
+	
+	public Feature getSideboardFeature(String title) {
+		for(Feature f : sidedeck) {
+			if(f.getTitle().equals(title)) {
+				return f;
+			}
+		}
+		return null;
 	}
 	
 //---  Support Methods   ----------------------------------------------------------------------

@@ -1,5 +1,8 @@
 package page.behavior;
 
+import page.feature.Feature;
+import page.feature.FeatureFinder;
+
 /**
  * Sub-class of Behavior that provides the ability to add a Feature as defined by string identifier
  * to the ConfigPage this Behavior has been associated to (and accordingly the code value as well).
@@ -27,12 +30,15 @@ package page.behavior;
  * 
  */
 
-public class BehaviorAddFeature extends Behavior {
+public class BehaviorAddFeature extends Behavior implements LayoutAccessor, SideboardAccessor{
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
+	/** CHOICE_INSERT is the mode for adding the new Feature in a way that does not consume FeatureSpacing;
+	 *  this will change the row's overall horizontal proportion.*/
 	public final static int CHOICE_INSERT = 0;
-	
+	/** CHOICE_REPLACE is the mode for adding the new Feature in a way that tries to replace any FeatureSpacing
+	 *  that is in the location it is added to instead of changing the row's overall horizontal proportion*/
 	public final static int CHOICE_REPLACE = 1;
 	
 	/** Choosing to insert above/below will assume a new row is being added entirely as column positions won't line up*/
@@ -55,6 +61,10 @@ public class BehaviorAddFeature extends Behavior {
 	 * The one stored in BehaviorAddFeature is the Feature that we want to add relative to its position.
 	 */
 	private String relativePositionFeature;
+	
+	private FeatureFinder parent;
+	
+	private Feature sideboardLoad;
 
 //---  Constructors   -------------------------------------------------------------------------
 	
@@ -79,8 +89,16 @@ public class BehaviorAddFeature extends Behavior {
 
 	@Override
 	public boolean performAction() {
-		// TODO Auto-generated method stub
+		FeatureFinder use = parent.findPossessingComposite(relativePositionFeature);
+		int row = use.findFeatureRow(relativePositionFeature);
+		int column = use.findFeatureColumn(relativePositionFeature);
+		//TODO: insert the sideboardLoad feature at the position denoted by row/column/howAdd/wherePlace
 		return false;
+	}
+	
+	@Override
+	public void assignLayoutAccessor(FeatureFinder root) {
+		parent = root;
 	}
 	
 	public String getRelativeFeatureReference() {
@@ -93,6 +111,16 @@ public class BehaviorAddFeature extends Behavior {
 	
 	public int getModePlacement() {
 		return wherePlace;
+	}
+
+	@Override
+	public void allocateSideboardFeature(Feature grant) {
+		sideboardLoad = grant;
+	}
+
+	@Override
+	public String getFeatureTitle() {
+		return this.getFeatureReference();
 	}
 
 }

@@ -6,6 +6,7 @@ import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
 import page.feature.FeatureTextInput;
 import page.feature.aspect.FeatureAspectLoader;
+import page.behavior.BehaviorAddFeature;
 import page.behavior.BehaviorConfigUpdate;
 import page.feature.Feature;
 
@@ -154,6 +155,11 @@ public class FeatureLoader {
 		page.conferFileAccess(bcu, propertyUpdate);
 		page.assignBehavior(codeMatch, bcu);
 		page.conferFeatureAccess(bcu);
+	}
+	
+	public void addBehaviorAddFeature(int codeMatch, String sideboardReference, String relativeReference, int howAdd, int wherePlace) {
+		BehaviorAddFeature baf = new BehaviorAddFeature(sideboardReference, relativeReference, howAdd, wherePlace);
+		page.conferLayoutAccess(baf);
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------

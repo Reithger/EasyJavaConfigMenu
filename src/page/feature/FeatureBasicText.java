@@ -15,7 +15,7 @@ public class FeatureBasicText extends Feature{
 
 	public FeatureBasicText(String inTitle, int proportionHorizontal, int proportionVertical, String displayText) {
 		super(inTitle, proportionHorizontal, proportionVertical);
-		text = displayText;
+		text = displayText == null ? "" : displayText;
 	}
 	
 	public String getDataContent() {

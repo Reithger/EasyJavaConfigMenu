@@ -27,7 +27,7 @@ public class FeaturePropertyText extends FeatureBasicText implements PropertyAcc
 	public FeaturePropertyText(String inTitle, int proportionHorizontal, int proportionVertical, String prefixText) {
 		super(inTitle, proportionHorizontal, proportionVertical, "");
 		lastGrabbed = "";
-		basicDisplay = prefixText;
+		basicDisplay = prefixText == null ? "" : prefixText;
 	}
 	
 	private void updateShowText(){
