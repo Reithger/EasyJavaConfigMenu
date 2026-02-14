@@ -27,8 +27,7 @@ public class BehaviorConfigUpdate extends Behavior implements PropertyAccessor, 
 
 	@Override
 	public boolean performAction() {
-		fileManip.setConfigPropertyValue(getFeatureData());
-		return false;
+		return fileManip.setConfigPropertyValue(getFeatureData());
 	}
 	
 	private String getFeatureData() {

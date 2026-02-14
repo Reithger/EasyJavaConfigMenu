@@ -11,7 +11,7 @@ public interface SpecificFileAccessor {
 
 	public abstract String accessData(String property) throws Exception;
 	
-	public abstract void assignData(String property, String value);
+	public abstract boolean assignData(String property, String value);
 	
 	public abstract SpecificPropertyAccessor getPropertyAccessor(String property);
 	

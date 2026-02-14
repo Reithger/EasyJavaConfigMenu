@@ -67,8 +67,8 @@ public class FileAccess implements ValidateFiles, SpecificFileAccessor{
 		return out;
 	}
 	
-	public void assignData(String property, String newEntry) {
-		Config.setConfigFileEntry(configPath(), property, newEntry);
+	public boolean assignData(String property, String newEntry) {
+		return Config.setConfigFileEntry(configPath(), property, newEntry);
 	}
 	
 	public void assignProperties(String path, String file, String ... properties) {

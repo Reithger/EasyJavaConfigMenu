@@ -14,6 +14,6 @@ public interface SpecificPropertyAccessor {
 
 	public abstract String getConfigPropertyValue() throws Exception;
 	
-	public abstract void setConfigPropertyValue(String value);
+	public abstract boolean setConfigPropertyValue(String value);
 	
 }

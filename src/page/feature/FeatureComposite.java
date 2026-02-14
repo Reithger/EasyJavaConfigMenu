@@ -24,7 +24,7 @@ import visual.composite.HandlePanel;
  * 
  */
 
-public class FeatureComposite extends Feature implements FeatureFinder{
+public class FeatureComposite extends Feature implements FeatureAdder, FeatureRemover{
 	
 //---  Instance Variables   -------------------------------------------------------------------
 	
@@ -327,7 +327,6 @@ public class FeatureComposite extends Feature implements FeatureFinder{
 
 	//-- Feature Finding  -------------------------------------
 	
-	@Override
 	public int findFeatureRow(String identifier) {
 		int row = 0;
 		for(ArrayList<Feature> arr : layout) {
@@ -341,7 +340,6 @@ public class FeatureComposite extends Feature implements FeatureFinder{
 		return -1;	
 	}
 	
-	@Override
 	public int findFeatureColumn(String identifier) {
 		for(ArrayList<Feature> arr : layout) {
 			int col = 0;
@@ -355,18 +353,123 @@ public class FeatureComposite extends Feature implements FeatureFinder{
 		return -1;	
 	}
 	
-	@Override
-	public FeatureFinder findPossessingComposite(String identifier) {
+	public FeatureComposite findPossessingComposite(String identifier) {
 		if(findFeature(identifier) != null) {
 			return this;
 		}
 		for(FeatureComposite fc : subLayouts) {
-			FeatureFinder out = fc.findPossessingComposite(identifier);
+			FeatureComposite out = fc.findPossessingComposite(identifier);
 			if(out != null) {
 				return out;
 			}
 		}
 		return null;
+	}
+
+	//-- Feature Adding  --------------------------------------
+	
+	@Override
+	public boolean addFeatureNewRow(String referenceFeature, Feature feat, boolean above) {
+		if(this.findFeature(referenceFeature) == null) {
+			return findPossessingComposite(referenceFeature).addFeatureNewRow(referenceFeature, feat, above);
+		}
+		
+		ArrayList<Feature> featRow = new ArrayList<Feature>();
+		featRow.add(feat);
+		int newInd = findFeatureRow(referenceFeature) + (above ? 0 : 1);
+		layout.add(newInd, featRow);
+		return true;
+	}
+	
+	@Override
+	public boolean addFeatureInRow(String referenceFeature, Feature feat, boolean insert, boolean after) {
+		System.out.println("referenceFeature");
+		if(this.findFeature(referenceFeature) == null) {
+			return findPossessingComposite(referenceFeature).addFeatureInRow(referenceFeature, feat, insert, after);
+		}
+		int column = findFeatureColumn(referenceFeature);
+		int row = findFeatureRow(referenceFeature);
+		if(after) {
+			column += layout.get(row).get(findFeatureIndex(row, column)).getHorizontalProportion();
+		}
+		if(!insert) {
+			return addFeature(feat, row, column);
+		}
+		else {
+			int posit = findFeatureIndex(row, column);
+			if(posit == -1) {
+				layout.get(row).add(feat);
+			}
+			else {
+				layout.get(row).add(posit, feat);
+			}
+			return true;
+		}
+	}
+	
+	//-- Feature Removing  ------------------------------------
+	
+	@Override
+	public boolean removeFeatureRow(String referenceFeature, boolean insertSpacing) {
+		if(this.findFeature(referenceFeature) == null) {
+			return findPossessingComposite(referenceFeature).removeFeatureRow(referenceFeature, insertSpacing);
+		}
+		int row = findFeatureRow(referenceFeature);
+		try {
+			if(!insertSpacing) {
+				if(row >= 0 && row < layout.size()) {
+					layout.remove(row);
+					return true;
+				}
+				return false;
+			}
+			else {
+				int wid = effectiveRowWidth(row);
+				layout.get(row).clear();
+				addFeature(new FeatureSpacing(FeatureSpacing.CAN_REMOVE, wid, 1), row, 0);
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean removeFeature(String referenceFeature, boolean replace) {
+		if(this.findFeature(referenceFeature) == null) {
+			return findPossessingComposite(referenceFeature).removeFeature(referenceFeature, replace);
+		}
+		int row = findFeatureRow(referenceFeature);
+		int column = findFeatureColumn(referenceFeature);
+		ArrayList<Feature> list = layout.get(row);
+		int posit = findFeatureIndex(row, column);
+		if(posit == -1) {
+			return false;
+		}
+		if(!replace) {
+			list.remove(findFeatureIndex(row, column));
+			return true;
+		}
+		else {
+			int wid = list.get(posit).getHorizontalProportion();
+			list.remove(posit);
+			return addFeature(new FeatureSpacing(FeatureSpacing.CAN_REMOVE, wid, 1), row, column);
+		}
+	}
+	
+	private int findFeatureIndex(int row, int column) {
+		ArrayList<Feature> list = layout.get(row);
+		int posit = 0;
+		int index = 0;
+		for(Feature f : list) {
+			if(posit >= column) {
+				return index;
+			}
+			posit += f.getHorizontalProportion();
+			index += 1;
+		}
+		return -1;
 	}
 	
 //---  Getter Methods   -----------------------------------------------------------------------
@@ -448,5 +551,5 @@ public class FeatureComposite extends Feature implements FeatureFinder{
 		}
 		return out;
 	}
-	
+
 }

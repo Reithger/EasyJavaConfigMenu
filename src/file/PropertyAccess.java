@@ -15,8 +15,8 @@ public class PropertyAccess extends FileAccess implements SpecificPropertyAccess
 	}
 
 	@Override
-	public void setConfigPropertyValue(String value) {
-		this.assignData(property, value);
+	public boolean setConfigPropertyValue(String value) {
+		return this.assignData(property, value);
 	}
 
 }

@@ -8,6 +8,7 @@ import page.feature.FeatureTextInput;
 import page.feature.aspect.FeatureAspectLoader;
 import page.behavior.BehaviorAddFeature;
 import page.behavior.BehaviorConfigUpdate;
+import page.behavior.BehaviorRemoveFeature;
 import page.feature.Feature;
 
 /**
@@ -157,9 +158,19 @@ public class FeatureLoader {
 		page.conferFeatureAccess(bcu);
 	}
 	
-	public void addBehaviorAddFeature(int codeMatch, String sideboardReference, String relativeReference, int howAdd, int wherePlace) {
-		BehaviorAddFeature baf = new BehaviorAddFeature(sideboardReference, relativeReference, howAdd, wherePlace);
-		page.conferLayoutAccess(baf);
+	public void addBehaviorAddFeature(int codeMatch, String sideboardReference, String relativeReference, boolean insert, boolean newRow, boolean inFront) {
+		BehaviorAddFeature baf = new BehaviorAddFeature(sideboardReference, relativeReference,
+														insert ? BehaviorAddFeature.CHOICE_INSERT : BehaviorAddFeature.CHOICE_REPLACE,
+														newRow ? (inFront ? BehaviorAddFeature.RELATIVE_BELOW : BehaviorAddFeature.RELATIVE_ABOVE) : (inFront ? BehaviorAddFeature.RELATIVE_RIGHT : BehaviorAddFeature.RELATIVE_LEFT));
+		page.conferSideboardFeature(baf);
+		page.conferFeatureAdderAccess(baf);
+		page.assignBehavior(codeMatch, baf);
+	}
+	
+	public void addBehaviorRemoveFeature(int codeMatch, String sideboardReference, boolean removeRow, boolean insertSpacing) {
+		BehaviorRemoveFeature brf = new BehaviorRemoveFeature(sideboardReference, removeRow, insertSpacing);
+		page.conferFeatureRemoverAccess(brf);
+		page.assignBehavior(codeMatch, brf);
 	}
 	
 //---  Operations   ---------------------------------------------------------------------------
@@ -207,9 +218,15 @@ public class FeatureLoader {
 				break;
 			case MODE_SIDE_DECK:
 				page.sideDeckFeature(in);
+				if(fal != null && fal.getApplyToAll()) {
+					fal.attachFeatureAspect(in.getTitle());
+				}
 				break;
 			case MODE_COMPOSITE:
 				page.composeFeature(in, row, column);
+				if(fal != null && fal.getApplyToAll()) {
+					fal.attachFeatureAspect(in.getTitle());
+				}
 				break;
 			default:
 				break;

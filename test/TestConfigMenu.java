@@ -2,6 +2,21 @@ import main.ConfigMenu;
 import page.FeatureLoader;
 import page.feature.aspect.FeatureAspectLoader;
 
+/**
+ * 
+ * TODO: Alternate FeatureLoader that is PrefabLoader for easily adding composites
+ * TODO: Feature - Paragraph Text
+ * TODO: Feature - Slider bar numeric input
+ * TODO: Feature - File Selector (popup navigator to get file path)
+ * TODO: Feature - Image Display
+ * TODO: Behavior - Config Page adder/remover
+ * TODO: Meta Config Page for display settings (font size, spacing, etc.)
+ * 
+ * TODO: Test dynamic config generation for ARTS program style usage
+ * 
+ * 
+ */
+
 public class TestConfigMenu {
 
 	public static void main(String[] args) {
@@ -45,7 +60,7 @@ public class TestConfigMenu {
 		try {
 			cm.resizeConfigWindow(350, 500);
 			
-			fl.allocateRowSpacing(new int[] {4, 6, 6});
+			fl.allocateRowSpacing(new int[] {4, 6, 6, 2});
 
 			FeatureAspectLoader fal = fl.getAspectMaker();
 			fal.applyAspectToAll();
@@ -74,7 +89,25 @@ public class TestConfigMenu {
 			fl.addTextInput("basic5", 2, 4, 1, 1, "Test4");
 			fl.addTextInput("basic6", 2, 5, 1, 1, "Test5");
 
+			fl.addButton("property 2", 3, 0, 1, 1, "Add", 6);
+			
+			fl.setAddToSideDeck();
+			
+			fl.addBasicText("side_1", 0, 0, 1, 1, "Added!");
+			
+			fl.addBasicText("side 2", 0, 0, 1, 1, "New row!");
+			
+			fl.addBasicText("side 3", 0, 0, 1, 1, "Respace");
+			
+			fl.addButton("butt 2", 0, 0, 1, 1, "Removal", 7);
+			
+			fl.addBehaviorAddFeature(6, "side_1", "property 2", false, false, true);
+			fl.addBehaviorAddFeature(6, "side 2", "property 2", false, true, false);
+			fl.addBehaviorAddFeature(6, "side 3", "side_1", true, false, true);
+			fl.addBehaviorAddFeature(6, "butt 2", "side 2", true, true, true);
 
+			fl.addBehaviorRemoveFeature(7, "side 3", false, false);
+			
 			fl.checkRowWidths();
 			
 			

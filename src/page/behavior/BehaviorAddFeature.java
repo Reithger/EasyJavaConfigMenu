@@ -1,7 +1,7 @@
 package page.behavior;
 
 import page.feature.Feature;
-import page.feature.FeatureFinder;
+import page.feature.FeatureAdder;
 
 /**
  * Sub-class of Behavior that provides the ability to add a Feature as defined by string identifier
@@ -30,7 +30,7 @@ import page.feature.FeatureFinder;
  * 
  */
 
-public class BehaviorAddFeature extends Behavior implements LayoutAccessor, SideboardAccessor{
+public class BehaviorAddFeature extends Behavior implements SideboardAccessor, FeatureAdderAccessor{
 	
 //---  Constants   ----------------------------------------------------------------------------
 	
@@ -62,7 +62,7 @@ public class BehaviorAddFeature extends Behavior implements LayoutAccessor, Side
 	 */
 	private String relativePositionFeature;
 	
-	private FeatureFinder parent;
+	private FeatureAdder featureAdd;
 	
 	private Feature sideboardLoad;
 
@@ -86,20 +86,34 @@ public class BehaviorAddFeature extends Behavior implements LayoutAccessor, Side
 		howAddChoice = choiceAdd;
 		wherePlace = choiceRelative;
 	}
+	
+//---  Operations   ---------------------------------------------------------------------------
 
 	@Override
 	public boolean performAction() {
-		FeatureFinder use = parent.findPossessingComposite(relativePositionFeature);
-		int row = use.findFeatureRow(relativePositionFeature);
-		int column = use.findFeatureColumn(relativePositionFeature);
+		System.out.println("Here");
 		//TODO: insert the sideboardLoad feature at the position denoted by row/column/howAdd/wherePlace
-		return false;
+		if(wherePlace == RELATIVE_ABOVE || wherePlace == RELATIVE_BELOW) {
+			return featureAdd.addFeatureNewRow(relativePositionFeature, sideboardLoad, wherePlace == RELATIVE_ABOVE);
+		}
+		else {
+			return featureAdd.addFeatureInRow(relativePositionFeature, sideboardLoad, howAddChoice == CHOICE_INSERT, wherePlace == RELATIVE_RIGHT);
+		}
 	}
 	
+//--- Injections   ----------------------------------------------------------------------------
+	
 	@Override
-	public void assignLayoutAccessor(FeatureFinder root) {
-		parent = root;
+	public void allocateFeatureAdderAccess(FeatureAdder add) {
+		featureAdd = add;
 	}
+
+	@Override
+	public void allocateSideboardFeature(Feature grant) {
+		sideboardLoad = grant;
+	}
+
+//---  Getter Methods   -----------------------------------------------------------------------
 	
 	public String getRelativeFeatureReference() {
 		return relativePositionFeature;
@@ -111,11 +125,6 @@ public class BehaviorAddFeature extends Behavior implements LayoutAccessor, Side
 	
 	public int getModePlacement() {
 		return wherePlace;
-	}
-
-	@Override
-	public void allocateSideboardFeature(Feature grant) {
-		sideboardLoad = grant;
 	}
 
 	@Override

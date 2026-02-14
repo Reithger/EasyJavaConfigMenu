@@ -5,8 +5,9 @@ import java.util.HashMap;
 import file.SpecificFileAccessor;
 import input.CustomEventReceiver;
 import page.behavior.Behavior;
+import page.behavior.FeatureAdderAccessor;
 import page.behavior.FeatureReader;
-import page.behavior.LayoutAccessor;
+import page.behavior.FeatureRemoverAccessor;
 import page.behavior.PropertyAccessor;
 import page.behavior.SideboardAccessor;
 import page.feature.Feature;
@@ -125,9 +126,12 @@ public class ConfigPage implements FeatureContentReader, AspectAssigner{
 		ArrayList<Behavior> behav = behaviorCodeMap.get(in);
 		if(behav != null) {
 			for(Behavior b : behav) {
-				b.performAction();
+				if(!b.performAction()){
+					System.err.println("Warning! Behavior failed to occur referencing Feature: " + b.getFeatureReference());
+				}
 			}
 		}
+		panel.removeAllElements();
 	}
 	
 	public void assignBehavior(int codeIn, Behavior behav) {
@@ -165,6 +169,13 @@ public class ConfigPage implements FeatureContentReader, AspectAssigner{
 		if(f != null) {
 			f.attachAspect(aspect.copy());
 		}
+		else {
+			for(Feature feat : sidedeck) {
+				if(feat.getTitle().equals(featureName)) {
+					feat.attachAspect(aspect.copy());
+				}
+			}
+		}
 	}
 
 	public void conferFileAccess(PropertyAccessor in, String property) {
@@ -175,14 +186,18 @@ public class ConfigPage implements FeatureContentReader, AspectAssigner{
 		in.assignFeatureContentReader(this);
 	}
 	
-	public void conferLayoutAccess(LayoutAccessor in) {
-		in.assignLayoutAccessor(layout);
-	}
-	
 	public void conferSideboardFeature(SideboardAccessor in) {
 		in.allocateSideboardFeature(getSideboardFeature(in.getFeatureTitle()));
 	}
+	
+	public void conferFeatureAdderAccess(FeatureAdderAccessor faa) {
+		faa.allocateFeatureAdderAccess(layout);
+	}
 
+	public void conferFeatureRemoverAccess(FeatureRemoverAccessor in) {
+		in.allocateFeatureRemoverAccess(layout);
+	}
+	
 	//-- Sidedeck/Feature Composition  ------------------------
 	
 	/**
