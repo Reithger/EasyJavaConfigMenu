@@ -22,6 +22,8 @@ import visual.composite.HandlePanel;
  * 
  * That can be a setting sometime, maybe?
  * 
+ * TODO: Non duplicate adding so AddBehavior can't do redundant feature adding.
+ * 
  */
 
 public class FeatureComposite extends Feature implements FeatureAdder, FeatureRemover{
@@ -138,6 +140,9 @@ public class FeatureComposite extends Feature implements FeatureAdder, FeatureRe
 		if(row < 0 || !initiated) {
 			return false;
 		}
+		if(checkDuplicate(newFeature.getTitle())) {
+			return false;
+		}
 		while(layout.size() <= row) {
 			layout.add(new ArrayList<Feature>());
 		}
@@ -191,7 +196,7 @@ public class FeatureComposite extends Feature implements FeatureAdder, FeatureRe
 	 * @return
 	 */
 	
-	private boolean insertFeature(int row, int desiredColumn, Feature newFeature) {
+ 	private boolean insertFeature(int row, int desiredColumn, Feature newFeature) {
 		//System.out.println("Row: " + layout.get(row));
 		ArrayList<Feature> list = layout.get(row);
 		/*
@@ -370,10 +375,14 @@ public class FeatureComposite extends Feature implements FeatureAdder, FeatureRe
 	
 	@Override
 	public boolean addFeatureNewRow(String referenceFeature, Feature feat, boolean above) {
+		if(checkDuplicate(feat.getTitle())) {
+			return false;
+		}
+		
 		if(this.findFeature(referenceFeature) == null) {
 			return findPossessingComposite(referenceFeature).addFeatureNewRow(referenceFeature, feat, above);
 		}
-		
+
 		ArrayList<Feature> featRow = new ArrayList<Feature>();
 		featRow.add(feat);
 		int newInd = findFeatureRow(referenceFeature) + (above ? 0 : 1);
@@ -383,10 +392,14 @@ public class FeatureComposite extends Feature implements FeatureAdder, FeatureRe
 	
 	@Override
 	public boolean addFeatureInRow(String referenceFeature, Feature feat, boolean insert, boolean after) {
-		System.out.println("referenceFeature");
+		if(checkDuplicate(feat.getTitle())) {
+			return false;
+		}
+		
 		if(this.findFeature(referenceFeature) == null) {
 			return findPossessingComposite(referenceFeature).addFeatureInRow(referenceFeature, feat, insert, after);
-		}
+		}		
+		
 		int column = findFeatureColumn(referenceFeature);
 		int row = findFeatureRow(referenceFeature);
 		if(after) {
@@ -438,7 +451,11 @@ public class FeatureComposite extends Feature implements FeatureAdder, FeatureRe
 	@Override
 	public boolean removeFeature(String referenceFeature, boolean replace) {
 		if(this.findFeature(referenceFeature) == null) {
-			return findPossessingComposite(referenceFeature).removeFeature(referenceFeature, replace);
+			FeatureComposite parent = findPossessingComposite(referenceFeature);
+			if(parent == null) {
+				return false;
+			}
+			return parent.removeFeature(referenceFeature, replace);
 		}
 		int row = findFeatureRow(referenceFeature);
 		int column = findFeatureColumn(referenceFeature);
@@ -548,6 +565,22 @@ public class FeatureComposite extends Feature implements FeatureAdder, FeatureRe
 		int out = 0;
 		for(Feature f : list) {
 			out += f.getHorizontalProportion();
+		}
+		return out;
+	}
+	
+	/**
+	 * Function to detect whether a particular identifier has already been used for a Feature
+	 * currently in this FeatureComposite.
+	 * 
+	 * @param identifier
+	 * @return
+	 */
+	
+	private boolean checkDuplicate(String identifier) {
+		boolean out =identifier != null && findFeature(identifier) != null && !identifier.equals(FeatureSpacing.CAN_REMOVE) && !identifier.equals(FeatureSpacing.CAN_REMOVE);
+		if(out) {
+			System.err.println("Error: Attempt to add identical Feature: " + identifier);
 		}
 		return out;
 	}

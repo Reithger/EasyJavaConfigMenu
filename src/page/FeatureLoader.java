@@ -2,6 +2,7 @@ package page;
 
 import page.feature.FeatureBasicText;
 import page.feature.FeatureButton;
+import page.feature.FeatureImage;
 import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
 import page.feature.FeatureTextInput;
@@ -113,6 +114,16 @@ public class FeatureLoader {
 	
 	public void addBasicText(String title, int row, int column, int horizontalProportion, int vertProportion, String textDisplay) throws Exception {
 		Feature f = new FeatureBasicText(title, horizontalProportion, vertProportion, textDisplay);
+		handleFeature(f, row, column);
+	}
+	
+	public void addImage(String title, int row, int column, int horizontalProportion, int verticalProportion, String imagePath, boolean fill) throws Exception {
+		Feature f = new FeatureImage(title, horizontalProportion, verticalProportion, imagePath, fill);
+		handleFeature(f, row, column);
+	}
+	
+	public void addParagraphText(String title, int row, int column, int horizontalProportion, int vertProportion, String textDisplay) throws Exception {
+		Feature f = new FeatureBasicText(title, horizontalProportion, vertProportion, textDisplay, false, false);
 		handleFeature(f, row, column);
 	}
 	

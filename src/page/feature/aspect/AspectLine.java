@@ -21,16 +21,16 @@ public class AspectLine extends FeatureAspect{
 	public void aspectDraw(HandlePanel p, int x, int y, int width, int height) {
 		switch(choice) {
 			case LINE_RIGHT:
-				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 3, x + width / 2, y - height / 2, x + width / 2, y + height / 2, 2, Color.black);
+				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 6, x + width / 2, y - height / 2, x + width / 2, y + height / 2, 2, Color.black);
 				break;
 			case LINE_TOP:
-				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 3, x - width / 2, y - height / 2, x + width / 2, y - height / 2, 2, Color.black);
+				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 6, x - width / 2, y - height / 2, x + width / 2, y - height / 2, 2, Color.black);
 				break;
 			case LINE_LEFT:
-				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 3, x - width / 2, y - height / 2, x - width / 2, y + height / 2, 2, Color.black);
+				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 6, x - width / 2, y - height / 2, x - width / 2, y + height / 2, 2, Color.black);
 				break;
 			case LINE_BOTTOM:
-				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 3, x - width / 2, y + height / 2, x + width / 2, y + height / 2, 2, Color.black);
+				p.handleLine("line:" + choice + "_" + x + "_" + y, "basic", 6, x - width / 2, y + height / 2, x + width / 2, y + height / 2, 2, Color.black);
 				break;
 			default:
 				break;

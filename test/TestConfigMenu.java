@@ -5,10 +5,10 @@ import page.feature.aspect.FeatureAspectLoader;
 /**
  * 
  * TODO: Alternate FeatureLoader that is PrefabLoader for easily adding composites
- * TODO: Feature - Paragraph Text
  * TODO: Feature - Slider bar numeric input
  * TODO: Feature - File Selector (popup navigator to get file path)
  * TODO: Feature - Image Display
+ * TODO: Feature - Check-box boolean
  * TODO: Behavior - Config Page adder/remover
  * TODO: Meta Config Page for display settings (font size, spacing, etc.)
  * 
@@ -69,7 +69,7 @@ public class TestConfigMenu {
 			// input format also anti-intuitive, effectively "y, x, wid, hei"
 			// Though the order of "which row, which column, how large" feels more sensical
 			
-			fl.addBasicText("basic", 0, 0, 2, 1, "Property 1");
+			fl.addBasicText("basic", 0, 0, 2, 1, "Property 1 and this is going to be a very large and long text box, like even longer and larger than you'd think");
 			
 			fl.addTextInput("basic2", 0, 2, 1, 1, "Value");
 			
@@ -78,16 +78,17 @@ public class TestConfigMenu {
 			fl.addBehaviorUpdateConfigProperty(5, "basic2", "test_val");
 			
 			fl.addBasicText("basic1", 1, 0, 2, 1, "Test1");
-			fl.addBasicText("basic3", 1, 2, 2, 2, "Test2");
+			fl.addBasicText("basic3", 1, 2, 2, 2, "Property 1 and this is going to be a very large and long text box, like even longer and larger than you'd think no like a ridiculous amount that is just wild to even fathom");
 			
 			fl.addReferenceText("reference", 1, 4, 2, 1, "H: ", "test_val");
 
 			
 			fl.addBasicText("basic4", 2, 0, 1, 1, "Test3");
 			
+			fl.addImage("basic9", 2, 1, 1, 1, "C:/Users/SirBo/Pictures/alien_cat_talking.png", true);
+			fl.addImage("basic5", 2, 4, 2, 1, "C:/Users/SirBo/Pictures/alien_cat_talking.png", false);
 			
-			fl.addTextInput("basic5", 2, 4, 1, 1, "Test4");
-			fl.addTextInput("basic6", 2, 5, 1, 1, "Test5");
+			
 
 			fl.addButton("property 2", 3, 0, 1, 1, "Add", 6);
 			
