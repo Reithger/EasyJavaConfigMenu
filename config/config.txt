@@ -1,5 +1,7 @@
 #####Default config file description
 #####
+checkbox = true</;>
+#####
 other_val = null</;>
 #####
-test_val = Values</;>
+test_val = null</;>

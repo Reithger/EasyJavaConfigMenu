@@ -17,9 +17,9 @@ import page.FeatureContentReader;
 
 public class BehaviorConfigUpdate extends Behavior implements PropertyAccessor, FeatureReader{
 	
-	private SpecificPropertyAccessor fileManip;
+	protected SpecificPropertyAccessor fileManip;
 	
-	private FeatureContentReader fcr;
+	protected FeatureContentReader fcr;
 
 	public BehaviorConfigUpdate(String featureReference) {
 		super(featureReference);

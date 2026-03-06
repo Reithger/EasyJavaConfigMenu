@@ -7,10 +7,12 @@ import page.feature.aspect.FeatureAspectLoader;
  * TODO: Alternate FeatureLoader that is PrefabLoader for easily adding composites
  * TODO: Feature - Slider bar numeric input
  * TODO: Feature - File Selector (popup navigator to get file path)
- * TODO: Feature - Image Display
- * TODO: Feature - Check-box boolean
+ * TODO: Feature - Color picker
+ * TODO: Feature - slideshow of options using BehaviorConfigToggle
+ * TODO: Feature - drop-down menu of options (hovers over the page, doesn't displace space)
  * TODO: Behavior - Config Page adder/remover
  * TODO: Meta Config Page for display settings (font size, spacing, etc.)
+ * TODO: Default config property assignment
  * 
  * TODO: Test dynamic config generation for ARTS program style usage
  * 
@@ -21,8 +23,11 @@ public class TestConfigMenu {
 
 	public static void main(String[] args) {
 		ConfigMenu cm = new ConfigMenu("./config/");
-		cm.establishConfigProperties("./config/", "test_val", "other_val");
+		cm.establishConfigProperties("./config/", "test_val", "other_val", "checkbox");
 		cm.addConfigPage("test", "./config/");
+		if(!cm.checkInitializeProperty("./config/", "checkbox")) {
+			cm.initializeConfigPropertyValue("./config/", "checkbox", "false");
+		}
 		
 		/*
 		 * 
@@ -61,6 +66,8 @@ public class TestConfigMenu {
 			cm.resizeConfigWindow(350, 500);
 			
 			fl.allocateRowSpacing(new int[] {4, 6, 6, 2});
+			
+			
 
 			FeatureAspectLoader fal = fl.getAspectMaker();
 			fal.applyAspectToAll();
@@ -85,8 +92,8 @@ public class TestConfigMenu {
 			
 			fl.addBasicText("basic4", 2, 0, 1, 1, "Test3");
 			
-			fl.addImage("basic9", 2, 1, 1, 1, "C:/Users/SirBo/Pictures/alien_cat_talking.png", true);
-			fl.addImage("basic5", 2, 4, 2, 1, "C:/Users/SirBo/Pictures/alien_cat_talking.png", false);
+			fl.addImage("basic9", 2, 1, 1, 1, "src/assets/ada.png", true);
+			fl.addImage("basic5", 2, 4, 2, 1, "src/assets/ada.png", false);
 			
 			
 
@@ -94,7 +101,7 @@ public class TestConfigMenu {
 			
 			fl.setAddToSideDeck();
 			
-			fl.addBasicText("side_1", 0, 0, 1, 1, "Added!");
+			fl.addCheckbox("side_1", 0, 0, 1, 1, "checkbox", 9);
 			
 			fl.addBasicText("side 2", 0, 0, 1, 1, "New row!");
 			

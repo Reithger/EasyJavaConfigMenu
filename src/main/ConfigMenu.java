@@ -78,6 +78,48 @@ public class ConfigMenu {
 		establishConfigPropertiesPath(pathToConfigFile, FileAccess.CONFIG_FILE_NAME, properties);
 	}
 	
+	/**
+	 * Function to assign a specific value to a property in the config file specified by the
+	 * path and file name arguments.
+	 * 
+	 * @param pathToConfigFile
+	 * @param fileName
+	 * @param property
+	 * @param value
+	 */
+	
+	public void initializeConfigPropertyValue(String pathToConfigFile, String fileName, String property, String value) {
+		configData.getConfigAccessor(pathToConfigFile, fileName).assignData(property, value);
+	}
+	
+	/**
+	 * Function to assign a specific value to a property in the config file specified by the
+	 * path and using the default config file name.
+	 * 
+	 * @param pathToConfigFile
+	 * @param fileName
+	 * @param property
+	 * @param value
+	 */
+	
+	public void initializeConfigPropertyValue(String pathToConfigFile,  String property, String value) {
+		configData.getConfigAccessor(pathToConfigFile).assignData(property, value);
+	}
+	
+	public boolean checkInitializeProperty(String pathToConfigFile, String property) {
+		return checkInitializeProperty(pathToConfigFile, FileAccess.CONFIG_FILE_NAME, property);
+	}
+	
+	public boolean checkInitializeProperty(String pathToConfigFile, String fileName, String property) {
+		try {
+			return !configData.getConfigAccessor(pathToConfigFile, fileName).accessData(property).equals("null");
+		} catch (Exception e) {
+			System.err.println("Accessed property: " + property + " in config file: " + pathToConfigFile + "/" + fileName+ " failed to be found.");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public void resizeConfigWindow(int width, int height) {
 		if(cw != null) {
 			cw.display(width, height);

@@ -2,12 +2,14 @@ package page;
 
 import page.feature.FeatureBasicText;
 import page.feature.FeatureButton;
+import page.feature.FeatureCheckbox;
 import page.feature.FeatureImage;
 import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
 import page.feature.FeatureTextInput;
 import page.feature.aspect.FeatureAspectLoader;
 import page.behavior.BehaviorAddFeature;
+import page.behavior.BehaviorConfigToggle;
 import page.behavior.BehaviorConfigUpdate;
 import page.behavior.BehaviorRemoveFeature;
 import page.feature.Feature;
@@ -122,6 +124,13 @@ public class FeatureLoader {
 		handleFeature(f, row, column);
 	}
 	
+	public void addCheckbox(String title, int row, int column, int horizontalProportion, int verticalProportion, String propertyReference, int codeVal) throws Exception {
+		FeatureCheckbox f = new FeatureCheckbox(title, horizontalProportion, verticalProportion, codeVal);
+		addBehaviorUpdateConfigToggle(codeVal, title, propertyReference, true, new String[] {"true", "false"});
+		page.conferFileAccess(f, propertyReference);
+		handleFeature(f, row, column);
+	}
+	
 	public void addParagraphText(String title, int row, int column, int horizontalProportion, int vertProportion, String textDisplay) throws Exception {
 		Feature f = new FeatureBasicText(title, horizontalProportion, vertProportion, textDisplay, false, false);
 		handleFeature(f, row, column);
@@ -167,6 +176,20 @@ public class FeatureLoader {
 		page.conferFileAccess(bcu, propertyUpdate);
 		page.assignBehavior(codeMatch, bcu);
 		page.conferFeatureAccess(bcu);
+	}
+	
+	public void addBehaviorUpdateConfigToggle(int codeMatch, String featureReference, String propertyUpdate, boolean incrementing, String ... values) {
+		try {
+			BehaviorConfigToggle bct = new BehaviorConfigToggle(featureReference, incrementing, values);
+			page.conferFileAccess(bct,  propertyUpdate);
+			page.assignBehavior(codeMatch, bct);
+			page.conferFeatureAccess(bct);
+			bct.initialize();
+		} catch (Exception e) {
+			System.err.println("Error: Behavior Config Toggle for code: " + codeMatch + " could not access property: " + propertyUpdate + " or it contained an illegitimate value");
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void addBehaviorAddFeature(int codeMatch, String sideboardReference, String relativeReference, boolean insert, boolean newRow, boolean inFront) {
