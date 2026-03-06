@@ -1,6 +1,8 @@
 #####Default config file description
 #####
-checkbox = true</;>
+path = C:\Users\Reithger\Pictures\target.png</;>
+#####
+checkbox = false</;>
 #####
 other_val = null</;>
 #####

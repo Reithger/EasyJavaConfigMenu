@@ -3,6 +3,7 @@ package page;
 import page.feature.FeatureBasicText;
 import page.feature.FeatureButton;
 import page.feature.FeatureCheckbox;
+import page.feature.FeatureFileSelect;
 import page.feature.FeatureImage;
 import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
@@ -11,6 +12,7 @@ import page.feature.aspect.FeatureAspectLoader;
 import page.behavior.BehaviorAddFeature;
 import page.behavior.BehaviorConfigToggle;
 import page.behavior.BehaviorConfigUpdate;
+import page.behavior.BehaviorOpenFileSelect;
 import page.behavior.BehaviorRemoveFeature;
 import page.feature.Feature;
 
@@ -131,6 +133,13 @@ public class FeatureLoader {
 		handleFeature(f, row, column);
 	}
 	
+	public void addFileSelect(String title, int row, int column, int horizontalProportion, int verticalProportion, String propertyReference, boolean isAnImage, int codeVal) throws Exception {
+		FeatureFileSelect f = new FeatureFileSelect(title, horizontalProportion, verticalProportion, isAnImage, codeVal);
+		page.conferFileAccess(f, propertyReference);
+		addBehaviorFileSelect(codeVal, title, propertyReference);
+		handleFeature(f, row, column);
+	}
+	
 	public void addParagraphText(String title, int row, int column, int horizontalProportion, int vertProportion, String textDisplay) throws Exception {
 		Feature f = new FeatureBasicText(title, horizontalProportion, vertProportion, textDisplay, false, false);
 		handleFeature(f, row, column);
@@ -190,6 +199,12 @@ public class FeatureLoader {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void addBehaviorFileSelect(int codeMatch, String featureReference, String propertyUpdate) {
+		BehaviorOpenFileSelect bofs = new BehaviorOpenFileSelect(featureReference);
+		page.conferFileAccess(bofs, propertyUpdate);
+		page.assignBehavior(codeMatch, bofs);
 	}
 	
 	public void addBehaviorAddFeature(int codeMatch, String sideboardReference, String relativeReference, boolean insert, boolean newRow, boolean inFront) {

@@ -28,7 +28,6 @@ public class FeatureImage extends Feature {
 
 	@Override
 	protected void draw(HandlePanel hp, int x, int y, int width, int height) {
-		// TODO Auto-generated method stub
 		hp.handleImage(this.getTitle() + "_" + x + "_" + y, "basic", 5, x, y, width, height, !stretchFill, imgPath);
 	}
 

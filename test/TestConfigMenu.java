@@ -4,17 +4,21 @@ import page.feature.aspect.FeatureAspectLoader;
 
 /**
  * 
+ * TODO: Test dynamic config generation for ARTS program style usage
+ * 
+ * Needed:
  * TODO: Alternate FeatureLoader that is PrefabLoader for easily adding composites
- * TODO: Feature - Slider bar numeric input
  * TODO: Feature - File Selector (popup navigator to get file path)
- * TODO: Feature - Color picker
  * TODO: Feature - slideshow of options using BehaviorConfigToggle
  * TODO: Feature - drop-down menu of options (hovers over the page, doesn't displace space)
  * TODO: Behavior - Config Page adder/remover
- * TODO: Meta Config Page for display settings (font size, spacing, etc.)
- * TODO: Default config property assignment
  * 
- * TODO: Test dynamic config generation for ARTS program style usage
+ * Optional:
+ * TODO: Feature - Slider bar numeric input
+ * TODO: Feature - Color picker
+ * TODO: Meta Config Page for display settings (font size, spacing, etc.)
+ * 
+ * TODO: Go back to File support library from SVI and adjust how it soft-writes a blueprint to add new properties not present
  * 
  * 
  */
@@ -23,10 +27,13 @@ public class TestConfigMenu {
 
 	public static void main(String[] args) {
 		ConfigMenu cm = new ConfigMenu("./config/");
-		cm.establishConfigProperties("./config/", "test_val", "other_val", "checkbox");
+		cm.establishConfigProperties("./config/", "test_val", "other_val", "checkbox", "path");
 		cm.addConfigPage("test", "./config/");
 		if(!cm.checkInitializeProperty("./config/", "checkbox")) {
 			cm.initializeConfigPropertyValue("./config/", "checkbox", "false");
+		}
+		if(!cm.checkInitializeProperty("./config/", "path")) {
+			cm.initializeConfigPropertyValue("./config/", "path", "C:\\Users\\Reithger\\eclipse-workspace\\EasyJavaConfigMenu\\src\\assets\\ada.png");
 		}
 		
 		/*
@@ -65,7 +72,7 @@ public class TestConfigMenu {
 		try {
 			cm.resizeConfigWindow(350, 500);
 			
-			fl.allocateRowSpacing(new int[] {4, 6, 6, 2});
+			fl.allocateRowSpacing(new int[] {4, 6, 6, 2, 4});
 			
 			
 
@@ -99,11 +106,17 @@ public class TestConfigMenu {
 
 			fl.addButton("property 2", 3, 0, 1, 1, "Add", 6);
 			
+			fl.addSpacing(4,  0,  1,  1);
+			
+			fl.addFileSelect("file 2", 4, 1, 3, 1, "path", false, 12);
+			
+			
+			
 			fl.setAddToSideDeck();
 			
 			fl.addCheckbox("side_1", 0, 0, 1, 1, "checkbox", 9);
 			
-			fl.addBasicText("side 2", 0, 0, 1, 1, "New row!");
+			fl.addFileSelect("side 2", 0, 0, 1, 1, "path", true, 10);
 			
 			fl.addBasicText("side 3", 0, 0, 1, 1, "Respace");
 			
@@ -112,7 +125,8 @@ public class TestConfigMenu {
 			fl.addBehaviorAddFeature(6, "side_1", "property 2", false, false, true);
 			fl.addBehaviorAddFeature(6, "side 2", "property 2", false, true, false);
 			fl.addBehaviorAddFeature(6, "side 3", "side_1", true, false, true);
-			fl.addBehaviorAddFeature(6, "butt 2", "side 2", true, true, true);
+			
+			fl.addBehaviorAddFeature(6, "butt 2", "property 2", true, true, true);
 
 			fl.addBehaviorRemoveFeature(7, "side 3", false, false);
 			

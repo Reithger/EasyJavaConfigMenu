@@ -2,9 +2,9 @@ package page.feature;
 
 import visual.composite.HandlePanel;
 
-public class FeatureNumberSlider extends Feature{
+public class FeatureToggleList extends Feature implements PropertyAccessor {
 
-	public FeatureNumberSlider(String inTitle, int proportionHorizontal, int proportionVertical) {
+	public FeatureToggleList(String inTitle, int proportionHorizontal, int proportionVertical) {
 		super(inTitle, proportionHorizontal, proportionVertical);
 		// TODO Auto-generated constructor stub
 	}
