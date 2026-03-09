@@ -8,6 +8,7 @@ import page.feature.FeatureImage;
 import page.feature.FeaturePropertyText;
 import page.feature.FeatureSpacing;
 import page.feature.FeatureTextInput;
+import page.feature.FeatureToggleList;
 import page.feature.aspect.FeatureAspectLoader;
 import page.behavior.BehaviorAddFeature;
 import page.behavior.BehaviorConfigToggle;
@@ -138,6 +139,14 @@ public class FeatureLoader {
 		page.conferFileAccess(f, propertyReference);
 		addBehaviorFileSelect(codeVal, title, propertyReference);
 		handleFeature(f, row, column);
+	}
+	
+	public void addOptionsToggle(String title, int row, int column, int horizontalProportion, int verticalProportion, String propertyReference, int codeDecrement, int codeIncrement, String ... toggleOptions) throws Exception {
+		FeatureToggleList ftl = new FeatureToggleList(title, horizontalProportion, verticalProportion, codeDecrement, codeIncrement);
+		page.conferFileAccess(ftl, propertyReference);
+		addBehaviorUpdateConfigToggle(codeDecrement, title, propertyReference, false, toggleOptions);
+		addBehaviorUpdateConfigToggle(codeIncrement, title, propertyReference, true, toggleOptions);
+		handleFeature(ftl, row, column);
 	}
 	
 	public void addParagraphText(String title, int row, int column, int horizontalProportion, int vertProportion, String textDisplay) throws Exception {

@@ -92,7 +92,6 @@ public class BehaviorAddFeature extends Behavior implements SideboardAccessor, F
 	@Override
 	public boolean performAction() {
 		System.out.println("Here");
-		//TODO: insert the sideboardLoad feature at the position denoted by row/column/howAdd/wherePlace
 		if(wherePlace == RELATIVE_ABOVE || wherePlace == RELATIVE_BELOW) {
 			return featureAdd.addFeatureNewRow(relativePositionFeature, sideboardLoad, wherePlace == RELATIVE_ABOVE);
 		}

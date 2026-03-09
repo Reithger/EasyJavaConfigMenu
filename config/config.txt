@@ -4,6 +4,7 @@ path = C:\Users\Reithger\Pictures\target.png</;>
 #####
 checkbox = false</;>
 #####
-other_val = null</;>
+other_val = B</;>
 #####
-test_val = null</;>
+test_val = Value</;>
+

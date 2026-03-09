@@ -9,7 +9,7 @@ public class FeatureBasicText extends Feature{
 	
 //---  Constant Values   ----------------------------------------------------------------------
 	
-	private final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
+	protected final static Font DEFAULT_FONT = new Font("Sans Serif", Font.BOLD, 12);
 	
 	private final static int SCROLLBAR_WIDTH = 15;
 	

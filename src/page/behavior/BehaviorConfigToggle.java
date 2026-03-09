@@ -17,6 +17,10 @@ public class BehaviorConfigToggle extends BehaviorConfigUpdate{
 	public void initialize() throws Exception {
 		String currVal = fileManip.getConfigPropertyValue();
 		index = indexOf(toggleValues, currVal);
+		if(index == -1) {
+			index = 0;
+			performAction();
+		}
 	}
 	
 	private int indexOf(String[] vals, String key) {

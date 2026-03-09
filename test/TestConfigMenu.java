@@ -8,8 +8,6 @@ import page.feature.aspect.FeatureAspectLoader;
  * 
  * Needed:
  * TODO: Alternate FeatureLoader that is PrefabLoader for easily adding composites
- * TODO: Feature - File Selector (popup navigator to get file path)
- * TODO: Feature - slideshow of options using BehaviorConfigToggle
  * TODO: Feature - drop-down menu of options (hovers over the page, doesn't displace space)
  * TODO: Behavior - Config Page adder/remover
  * 
@@ -17,8 +15,9 @@ import page.feature.aspect.FeatureAspectLoader;
  * TODO: Feature - Slider bar numeric input
  * TODO: Feature - Color picker
  * TODO: Meta Config Page for display settings (font size, spacing, etc.)
+ * TODO: Descriptive meta-text on hovering over a Feature (customizable)
  * 
- * TODO: Go back to File support library from SVI and adjust how it soft-writes a blueprint to add new properties not present
+ * TODO: Go back to File support package from SVI and adjust how it soft-writes a blueprint to add new properties not present
  * 
  * 
  */
@@ -106,9 +105,11 @@ public class TestConfigMenu {
 
 			fl.addButton("property 2", 3, 0, 1, 1, "Add", 6);
 			
-			fl.addSpacing(4,  0,  1,  1);
+			//fl.addSpacing(4,  0,  1,  1);
 			
-			fl.addFileSelect("file 2", 4, 1, 3, 1, "path", false, 12);
+			fl.addOptionsToggle("toggle list", 4, 0, 2, 1, "other_val", 15, 16, "A", "B", "C", "D");
+			
+			fl.addFileSelect("file 2", 4, 2, 2, 1, "path", false, 12);
 			
 			
 			
