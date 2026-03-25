@@ -1,6 +1,6 @@
 #####Default config file description
 #####
-path = C:\Users\Reithger\Pictures\target.png</;>
+path = C:\Users\SirBo\Pictures\alien_cat_talking.png</;>
 #####
 checkbox = false</;>
 #####

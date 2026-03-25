@@ -1,5 +1,6 @@
 package page.feature;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 
@@ -32,13 +33,14 @@ public class FeatureFileSelect extends Feature implements PropertyAccessor{
 	@Override
 	protected void draw(HandlePanel hp, int x, int y, int width, int height) {
 		String path = getDataContent();
+		File f = new File(path);
 		int useX = (int)(x - width * .1);
 		int useWid = (int)(width * .8);
 		if(!lastSeen.equals(path)) {
 			hp.removeElementPrefixed(getTitle() + "_" + x + "_" + y);
 			lastSeen = path;
 		}
-		if(isAnImage && (path.contains(".png") || path.contains(".jpg"))) {
+		if(isAnImage && (path.contains(".png") || path.contains(".jpg")) && f.exists()) {
 			hp.handleImage(this.getTitle() + "_" + x + "_" + y, "basic", 5, useX, y, useWid, height, true, path);
 		}
 		else {
@@ -51,7 +53,7 @@ public class FeatureFileSelect extends Feature implements PropertyAccessor{
 			if(!path.equals(lastSeen)) {
 				path = "..." + path;
 			}
-			el.addText(getTitle() + "_" + x + "_" + y, 5, "basic", useX, y, useWid, height, path, DEFAULT_FONT, true, true, true);
+			el.addText(getTitle() + "_" + x + "_" + y, 5, "basic", useX, y, useWid, height, path, DEFAULT_FONT, f.exists() ? Color.black : Color.red, true, true, true);
 		}
 		int size = (int)(width * .1) < height ? (int)(width * .1) : height;
 		hp.handleImageButton(getTitle() + "_button_" + x + "_" + y, "basic", 5, x + (int)(width * .4), y, size, size, BUTTON_IMAGE, codeVal);
